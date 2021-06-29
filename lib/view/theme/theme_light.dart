@@ -346,7 +346,6 @@ final ThemeData myThemeLight = ThemeData(
       fontStyle: FontStyle.normal,
     ),
     errorMaxLines: null,
-    hasFloatingPlaceholder: true,
     isDense: false,
     contentPadding: EdgeInsets.only(top: 12, bottom: 12, left: 0, right: 0),
     isCollapsed: false,
@@ -369,7 +368,7 @@ final ThemeData myThemeLight = ThemeData(
       fontStyle: FontStyle.normal,
     ),
     filled: false,
-    fillColor: Color(0x00000000),
+    fillColor: Color(0x00000000), floatingLabelBehavior: FloatingLabelBehavior.auto,
     errorBorder: UnderlineInputBorder(
       borderSide: BorderSide(
         color: Color(0xff000000),

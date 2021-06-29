@@ -379,10 +379,7 @@ class _KayitSayfaState extends State<KayitSayfa> {
   }
 
   Widget get _googleKayitBtn => InkWell(
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => TabBarMain()));
-        },
+        onTap: _googleIleGiris,
         child: Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.07,
@@ -407,6 +404,45 @@ class _KayitSayfaState extends State<KayitSayfa> {
               )
             ])),
       );
+
+  void _googleIleGiris() async {
+    var _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
+
+    setState(() {
+      _yukleniyor = true;
+    });
+    try {
+      Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
+      if (kullanici != null) {
+        Kullanici? firestoreKullanici =
+            await FirestoreServisi().kullaniciGetir(kullanici.id);
+        if (firestoreKullanici == null) {
+          FirestoreServisi().kullaniciOlustur(
+              id: kullanici.id,
+              email: kullanici.email,
+              adSoyad: kullanici.adSoyad,
+              fotoUrl: kullanici.fotoUrl);
+        }
+      }
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => TabBarMain(
+                    aktifKullaniciId: kullanici!.id,
+                  )));
+    } catch (hata) {
+      if (mounted) {
+        setState(() {
+          _yukleniyor = false;
+        });
+      }
+      uyariGoster(hataKodu: hata.hashCode);
+      print(hata.toString());
+      print(hata.hashCode);
+    }
+  }
 
   Widget get _girisYapNavigator => Row(
         mainAxisAlignment: MainAxisAlignment.center,

@@ -7,8 +7,14 @@ class Kullanici {
   final String? adSoyad;
   final String? fotoUrl;
   final String? email;
+  final String? dogrulandiMi;
 
-  Kullanici({@required this.id, this.adSoyad, this.fotoUrl, this.email});
+  Kullanici(
+      {@required this.id,
+      this.adSoyad,
+      this.fotoUrl,
+      this.email,
+      this.dogrulandiMi});
 
   factory Kullanici.firebasedenUret(User kullanici) {
     return Kullanici(
@@ -22,19 +28,10 @@ class Kullanici {
   factory Kullanici.dokumandanUret(DocumentSnapshot doc) {
     var docData = doc.data();
     return Kullanici(
-      id: doc.id,
-      adSoyad: (docData as Map)['adSoyad'],
-      email: docData['email'],
-      fotoUrl: docData['fotoUrl'],
-    );
+        id: doc.id,
+        adSoyad: (docData as Map)['adSoyad'],
+        email: docData['email'],
+        fotoUrl: docData['fotoUrl'],
+        dogrulandiMi: docData['dogrulandiMi']);
   }
-
-  // factory Kullanici.dokumandanUretIki(DocumentSnapshot doc) {
-  //   var docData = doc.data();
-  //   return Kullanici(
-  //     id: doc.id,
-  //     email: docData['email'],
-  //     fotoUrl: docData['fotoUrl'],
-  //   );
-  // }
 }

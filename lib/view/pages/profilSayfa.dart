@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/pages/profiliDuzenleSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ class ProfilSayfa extends StatefulWidget {
 
 class _ProfilSayfaState extends State<ProfilSayfa>
     with AutomaticKeepAliveClientMixin {
+  Kullanici? _profilSahibi;
   @override
   bool get wantKeepAlive => true;
 
@@ -38,106 +40,109 @@ class _ProfilSayfaState extends State<ProfilSayfa>
               fontWeight: FontWeight.w800),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            boslukHeight(context, 0.03),
-            FutureBuilder(
-              future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Row(
-                    children: [
-                      boslukWidth(context, 0.1),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      )
-                    ],
-                  );
-                }
-                return _fotoVeIsim(context, snapshot.data as Kullanici);
-              },
+      body: FutureBuilder(
+        future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          _profilSahibi = snapshot.data as Kullanici;
+          print("bu bir deneme" + _profilSahibi.toString());
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                boslukHeight(context, 0.03),
+                _fotoVeIsim(context, _profilSahibi!),
+                boslukHeight(context, 0.03),
+                _customDivider,
+                _emailListTile(_profilSahibi),
+                _customDivider,
+                _profiliDuzenleListTile(_profilSahibi!),
+                _customDivider,
+                _sifremiDegistirListTile(),
+                _customDivider,
+                _yardimListTile,
+                _customDivider,
+                _sikayetListTile,
+                _customDivider,
+                _cikisYap(),
+                boslukHeight(context, 0.1),
+                _versiyonColumn,
+              ],
             ),
-            boslukHeight(context, 0.03),
-            _customDivider,
-            FutureBuilder(
-              future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return Row(
-                    children: [
-                      boslukWidth(context, 0.1),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
-                      )
-                    ],
-                  );
-                }
-                return _emailListTile(snapshot.data as Kullanici);
-              },
-            ),
-            _customDivider,
-            _profiliDuzenleListTile(),
-            _customDivider,
-            _sifremiDegistirListTile(),
-            _customDivider,
-            _yardimListTile,
-            _customDivider,
-            _sikayetListTile,
-            _customDivider,
-            _cikisYap(),
-            boslukHeight(context, 0.1),
-            _versiyonColumn,
-          ],
-        ),
+          );
+        },
       ),
-      // body: FutureBuilder(
-      //   future: FirestoreServisi().kullaniciGetir(aktifKullaniciId),
-      //   builder: (context, snapshot) {
-      //     if (!snapshot.hasData) {
-      //       return Scaffold(
-      //           body: Center(
-      //         child: CircularProgressIndicator(),
-      //       ));
-      //     }
-      //     return SingleChildScrollView(
-      //       child: Column(
-      //         mainAxisAlignment: MainAxisAlignment.start,
-      //         children: [
-      //           boslukHeight(context, 0.03),
-      //           _fotoVeIsim(context, snapshot.data as Kullanici?),
-      //           boslukHeight(context, 0.03),
-      //           _customDivider,
-      //           _emailListTile(snapshot.data as Kullanici?),
-      //           _customDivider,
-      //           _profiliDuzenleListTile(),
-      //           _customDivider,
-      //           _sifremiDegistirListTile(),
-      //           _customDivider,
-      //           _yardimListTile,
-      //           _customDivider,
-      //           _sikayetListTile,
-      //           _customDivider,
-      //           _cikisYap(),
-      //           boslukHeight(context, 0.1),
-      //           _versiyonColumn,
-      //         ],
-      //       ),
-      //     );
-      //   },
-      // )
     );
   }
 
-  Widget _fotoVeIsim(BuildContext context, Kullanici? profilData) {
+  // body: SingleChildScrollView(
+  //       child: Column(
+  //         children: [
+  //           boslukHeight(context, 0.03),
+  //           FutureBuilder(
+  //             future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
+  //             builder: (context, snapshot) {
+  //               if (!snapshot.hasData) {
+  //                 return Row(
+  //                   children: [
+  //                     boslukWidth(context, 0.1),
+  //                     Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: CircularProgressIndicator(),
+  //                     )
+  //                   ],
+  //                 );
+  //               }
+  //               _profilSahibi = snapshot.data as Kullanici;
+  //               print("bu bir deneme" + _profilSahibi.toString());
+  //               return _fotoVeIsim(context, snapshot.data as Kullanici);
+  //             },
+  //           ),
+  //           boslukHeight(context, 0.03),
+  //           _customDivider,
+  //           FutureBuilder(
+  //             future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
+  //             builder: (context, snapshot) {
+  //               if (!snapshot.hasData) {
+  //                 return Row(
+  //                   children: [
+  //                     boslukWidth(context, 0.1),
+  //                     Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: CircularProgressIndicator(),
+  //                     )
+  //                   ],
+  //                 );
+  //               }
+  //               return _emailListTile(snapshot.data as Kullanici);
+  //             },
+  //           ),
+  //           _customDivider,
+  //           _profiliDuzenleListTile(_profilSahibi),
+  //           _customDivider,
+  //           _sifremiDegistirListTile(),
+  //           _customDivider,
+  //           _yardimListTile,
+  //           _customDivider,
+  //           _sikayetListTile,
+  //           _customDivider,
+  //           _cikisYap(),
+  //           boslukHeight(context, 0.1),
+  //           _versiyonColumn,
+  //         ],
+  //       ),
+  //     ),
+
+  Widget _fotoVeIsim(BuildContext context, Kullanici profilData) {
     return Row(
       children: [
         boslukWidth(context, 0.04),
         CircleAvatar(
           backgroundColor: Theme.of(context).primaryColor,
-          backgroundImage: profilData!.fotoUrl!.isNotEmpty
+          backgroundImage: profilData.fotoUrl!.isNotEmpty
               ? NetworkImage(profilData.fotoUrl.toString())
               : AssetImage("assets/images/default_profile.png")
                   as ImageProvider,
@@ -199,10 +204,13 @@ class _ProfilSayfaState extends State<ProfilSayfa>
               side: BorderSide(color: Theme.of(context).primaryColor)),
           onPressed: () {
             //TODO: maili onaylanacak snackbar gösterilecek kod gönderilecek
-            print('Maili onayla sayfası');
+            var snackBar = SnackBar(content: Text('Mailine link gönderdik.'));
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           },
           child: Text(
-            'Doğrula',
+            profilData.dogrulandiMi == "true" ? 'Doğrulandı' : 'Doğrula',
             style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 // fontSize: 20,
@@ -212,11 +220,15 @@ class _ProfilSayfaState extends State<ProfilSayfa>
     );
   }
 
-  Widget _profiliDuzenleListTile() {
+  Widget _profiliDuzenleListTile(Kullanici profilData) {
     return InkWell(
       onTap: () {
-        //TODO: Profili düzenle sayfasına gidecek
-        print("Profili Düzenle Sayfasına gideek");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProfiliDuzenleSayfa(
+                      profilSahibiId: profilData,
+                    )));
       },
       child: ListTile(
         minVerticalPadding: 0,
