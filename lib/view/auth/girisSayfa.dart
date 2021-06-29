@@ -304,9 +304,15 @@ class _GirisSayfaState extends State<GirisSayfa> {
       });
 
       try {
-        await _yetkilendirmeServisi.mailIleGiris(email!, sifre!);
+        Kullanici? kullanici =
+            await _yetkilendirmeServisi.mailIleGiris(email!, sifre!);
+
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => TabBarMain()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => TabBarMain(
+                      aktifKullaniciId: kullanici!.id,
+                    )));
       } catch (hata) {
         setState(() {
           _yukleniyor = false;
@@ -315,27 +321,6 @@ class _GirisSayfaState extends State<GirisSayfa> {
         print(hata.toString());
         print(hata.hashCode);
       }
-    }
-  }
-
-  uyariGoster({hataKodu}) {
-    String? hataMesaji;
-
-    if (hataKodu == 505284406) {
-      hataMesaji = "Böyle bir kullanıcı bulunmuyor.";
-    } else if (hataKodu == 360587416) {
-      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
-    } else if (hataKodu == 185768934) {
-      hataMesaji = "Girilen şifre hatalı.";
-    } else if (hataKodu == 446151799) {
-      hataMesaji = "Kullanıcı engellenmiş.";
-    } else {
-      hataMesaji = "Bir hata oluştu.";
-    }
-
-    var snackBar = SnackBar(content: Text('$hataMesaji'));
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
@@ -359,8 +344,13 @@ class _GirisSayfaState extends State<GirisSayfa> {
               fotoUrl: kullanici.fotoUrl);
         }
       }
+
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => TabBarMain()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => TabBarMain(
+                    aktifKullaniciId: kullanici!.id,
+                  )));
     } catch (hata) {
       if (mounted) {
         setState(() {
@@ -370,6 +360,27 @@ class _GirisSayfaState extends State<GirisSayfa> {
       uyariGoster(hataKodu: hata.hashCode);
       print(hata.toString());
       print(hata.hashCode);
+    }
+  }
+
+  uyariGoster({hataKodu}) {
+    String? hataMesaji;
+
+    if (hataKodu == 505284406) {
+      hataMesaji = "Böyle bir kullanıcı bulunmuyor.";
+    } else if (hataKodu == 360587416) {
+      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
+    } else if (hataKodu == 185768934) {
+      hataMesaji = "Girilen şifre hatalı.";
+    } else if (hataKodu == 446151799) {
+      hataMesaji = "Kullanıcı engellenmiş.";
+    } else {
+      hataMesaji = "Bir hata oluştu.";
+    }
+
+    var snackBar = SnackBar(content: Text('$hataMesaji'));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 

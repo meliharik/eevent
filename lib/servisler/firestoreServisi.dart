@@ -15,12 +15,12 @@ class FirestoreServisi {
   }
 
   Future<Kullanici?> kullaniciGetir(id) async {
+
     DocumentSnapshot doc =
         await _firestore.collection("kullanicilar").doc(id).get();
     if (doc.exists) {
       Kullanici kullanici = Kullanici.dokumandanUret(doc);
       return kullanici;
     }
-    return null;
   }
 }

@@ -342,7 +342,14 @@ class _KayitSayfaState extends State<KayitSayfa> {
           FirestoreServisi().kullaniciOlustur(
               id: kullanici.id, email: email, adSoyad: adSoyad);
         }
-        Navigator.pop(context);
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TabBarMain(
+                      aktifKullaniciId: kullanici!.id,
+                    )));
+        // Navigator.pop(context);
       } catch (hata) {
         setState(() {
           _yukleniyor = false;

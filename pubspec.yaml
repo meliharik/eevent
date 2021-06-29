@@ -40,7 +40,6 @@ dependencies:
   firebase_core:
   provider:
   google_sign_in:
-  flutter_svg:
 
 dev_dependencies:
   flutter_test:

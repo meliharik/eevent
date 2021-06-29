@@ -1,12 +1,16 @@
 import 'dart:math';
 
+import 'package:event_app/model/kullanici.dart';
+import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AnaSayfa extends StatefulWidget {
-  const AnaSayfa({Key? key}) : super(key: key);
+  final String? aktifKullaniciId;
+
+  const AnaSayfa({Key? key, this.aktifKullaniciId}) : super(key: key);
 
   @override
   _AnaSayfaState createState() => _AnaSayfaState();
@@ -17,7 +21,7 @@ class _AnaSayfaState extends State<AnaSayfa>
   @override
   bool get wantKeepAlive => true;
 
-  String _randomText() {
+  String _randomTextler() {
     var _random = Random();
     final List<String> textler = [
       'Bugün neler öğrenmek istiyorsun?',
@@ -78,23 +82,19 @@ class _AnaSayfaState extends State<AnaSayfa>
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Text(
-                  'Selam Melih',
-                  style: TextStyle(
-                      color: Color(0xff252745),
-                      fontSize: MediaQuery.of(context).size.height * 0.035,
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w800),
+                boslukHeight(context, 0.01),
+                FutureBuilder(
+                  future: FirestoreServisi()
+                      .kullaniciGetir(widget.aktifKullaniciId),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                    return _selamText(snapshot.data as Kullanici);
+                  },
                 ),
                 boslukHeight(context, 0.01),
-                Text(
-                  _randomText(),
-                  style: TextStyle(
-                      color: Color(0xff252745),
-                      fontSize: MediaQuery.of(context).size.height * 0.02,
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w600),
-                ),
+                _randomText,
                 boslukHeight(context, 0.02),
                 _populerRow,
                 boslukHeight(context, 0.01),
@@ -113,6 +113,33 @@ class _AnaSayfaState extends State<AnaSayfa>
           ),
         ));
   }
+
+  _selamText(Kullanici profilData) {
+    return Text(
+      "Selam " + _sadeceIsim(profilData).toString(),
+      style: TextStyle(
+          color: Color(0xff252745),
+          fontSize: MediaQuery.of(context).size.height * 0.035,
+          fontFamily: 'Manrope',
+          fontWeight: FontWeight.w800),
+    );
+  }
+
+  String _sadeceIsim(Kullanici profilData) {
+    var isimFull = profilData.adSoyad;
+    var parts = isimFull!.split(' ');
+    var isim = parts[0].trim();
+    return isim;
+  }
+
+  Widget get _randomText => Text(
+        _randomTextler(),
+        style: TextStyle(
+            color: Color(0xff252745),
+            fontSize: MediaQuery.of(context).size.height * 0.02,
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w600),
+      );
 
   Widget get _popularCardlar => Container(
         height: MediaQuery.of(context).size.height * 0.33,

@@ -1,3 +1,4 @@
+
 import 'package:event_app/view/pages/anaSayfa.dart';
 import 'package:event_app/view/pages/aramaSayfa.dart';
 import 'package:event_app/view/pages/biletlerimSayfa.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class TabBarMain extends StatefulWidget {
-  const TabBarMain({Key? key}) : super(key: key);
+  final String? aktifKullaniciId;
+  const TabBarMain({Key? key, this.aktifKullaniciId}) : super(key: key);
 
   @override
   _TabBarMainState createState() => _TabBarMainState();
@@ -14,36 +16,44 @@ class TabBarMain extends StatefulWidget {
 
 class _TabBarMainState extends State<TabBarMain> {
   int _currentIndex = 0;
-  final _controller = PageController();
+  // final _controller = PageController();
 
-  void _onChange(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    _controller.animateToPage(_currentIndex,
-        duration: Duration(milliseconds: 400), curve: Curves.decelerate);
-  }
+  // void _onChange(int index) {
+  //   setState(() {
+  //     _currentIndex = index;
+  //   });
+  //   _controller.animateToPage(_currentIndex,
+  //       duration: Duration(milliseconds: 400), curve: Curves.decelerate);
+  // }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 4,
       initialIndex: 0,
-      child: Scaffold(bottomNavigationBar: _bottomAppBar, body: _tabbarViews),
+      child: Scaffold(
+          bottomNavigationBar: _bottomAppBar,
+          body: _tabbarViews(widget.aktifKullaniciId)),
     );
   }
 
-  Widget get _tabbarViews => TabBarView(
-        // index: _currentIndex, indexedstack için
-        // controller: _controller, Pageview için
-        physics: NeverScrollableScrollPhysics(),
-        children: <Widget>[
-          AnaSayfa(),
-          AramaSayfa(),
-          BiletlerimSayfa(),
-          ProfilSayfa()
-        ],
-      );
+  Widget _tabbarViews(String? aktifKullaniciId) {
+    return TabBarView(
+      // index: _currentIndex, indexedstack için
+      // controller: _controller, Pageview için
+      physics: NeverScrollableScrollPhysics(),
+      children: <Widget>[
+        AnaSayfa(
+          aktifKullaniciId: widget.aktifKullaniciId,
+        ),
+        AramaSayfa(),
+        BiletlerimSayfa(),
+        ProfilSayfa(
+          profilSahibiId: widget.aktifKullaniciId,
+        )
+      ],
+    );
+  }
 
   Widget get _bottomAppBar => BottomAppBar(
         color: Theme.of(context).scaffoldBackgroundColor,

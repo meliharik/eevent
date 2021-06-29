@@ -5,12 +5,12 @@ import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class ProfilSayfa extends StatefulWidget {
-  const ProfilSayfa({Key? key}) : super(key: key);
+  final String? profilSahibiId;
+  const ProfilSayfa({Key? key, this.profilSahibiId}) : super(key: key);
 
   @override
   State<ProfilSayfa> createState() => _ProfilSayfaState();
@@ -23,9 +23,6 @@ class _ProfilSayfaState extends State<ProfilSayfa>
 
   @override
   Widget build(BuildContext context) {
-    String? aktifKullaniciId =
-        Provider.of<YetkilendirmeServisi>(context, listen: false)
-            .aktifKullaniciId;
     super.build(context);
     return Scaffold(
       appBar: AppBar(
@@ -46,7 +43,7 @@ class _ProfilSayfaState extends State<ProfilSayfa>
           children: [
             boslukHeight(context, 0.03),
             FutureBuilder(
-              future: FirestoreServisi().kullaniciGetir(aktifKullaniciId),
+              future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Row(
@@ -65,7 +62,7 @@ class _ProfilSayfaState extends State<ProfilSayfa>
             boslukHeight(context, 0.03),
             _customDivider,
             FutureBuilder(
-              future: FirestoreServisi().kullaniciGetir(aktifKullaniciId),
+              future: FirestoreServisi().kullaniciGetir(widget.profilSahibiId),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Row(
@@ -139,7 +136,6 @@ class _ProfilSayfaState extends State<ProfilSayfa>
       children: [
         boslukWidth(context, 0.04),
         CircleAvatar(
-          //child: ClipOval(child: Image.network(profilData!.fotoUrl.toString())),
           backgroundColor: Theme.of(context).primaryColor,
           backgroundImage: profilData!.fotoUrl!.isNotEmpty
               ? NetworkImage(profilData.fotoUrl.toString())
