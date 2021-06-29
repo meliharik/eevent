@@ -1,4 +1,4 @@
-import 'package:event_app/model/widthAndHeight.dart';
+import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/biletDetaySayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';

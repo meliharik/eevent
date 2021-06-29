@@ -1,9 +1,13 @@
-import 'package:event_app/model/tabbar_view.dart';
-import 'package:event_app/model/widthAndHeight.dart';
+import 'package:event_app/model/kullanici.dart';
+import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/viewModel/tabbar_view.dart';
+import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/kayitSayfa.dart';
 import 'package:event_app/view/auth/sifremiUnuttumSayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class GirisSayfa extends StatefulWidget {
   const GirisSayfa({Key? key}) : super(key: key);
@@ -15,10 +19,20 @@ class GirisSayfa extends StatefulWidget {
 class _GirisSayfaState extends State<GirisSayfa> {
   bool isObscureTextTrue = true;
   final _formAnahtari = GlobalKey<FormState>();
+  final _scaffoldAnahtari = GlobalKey<ScaffoldState>();
   bool _yukleniyor = false;
+  String? email, sifre;
+
+  @override
+  void dispose() {
+    _yukleniyor = false;
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: _scaffoldAnahtari,
         resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
@@ -56,7 +70,7 @@ class _GirisSayfaState extends State<GirisSayfa> {
           boslukHeight(context, 0.03),
           _googleGirisBtn,
           _expandedHeight,
-          _hesapOlusturBtn,
+          _hesapOlusturNavigator,
           boslukHeight(context, 0.05),
         ],
       ),
@@ -146,6 +160,9 @@ class _GirisSayfaState extends State<GirisSayfa> {
             }
             return null;
           },
+          onSaved: (girilenDeger) {
+            email = girilenDeger;
+          },
         ),
       );
 
@@ -213,6 +230,9 @@ class _GirisSayfaState extends State<GirisSayfa> {
             }
             return null;
           },
+          onSaved: (girilenDeger) {
+            sifre = girilenDeger;
+          },
         ),
       );
 
@@ -244,6 +264,11 @@ class _GirisSayfaState extends State<GirisSayfa> {
         ],
       );
 
+  Widget get _expandedHeight => Expanded(
+          child: SizedBox(
+        child: Text(''),
+      ));
+
   Widget get _girisYapBtn => InkWell(
         onTap: _girisYap,
         child: Container(
@@ -267,24 +292,89 @@ class _GirisSayfaState extends State<GirisSayfa> {
         ),
       );
 
-  Widget get _expandedHeight => Expanded(
-          child: SizedBox(
-        child: Text(''),
-      ));
-
-  void _girisYap() {
-    if (_formAnahtari.currentState!.validate()) {
+  void _girisYap() async {
+    final _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
+    var _formState = _formAnahtari.currentState;
+    if (_formState!.validate()) {
+      _formState.save();
+      FocusScope.of(context).unfocus();
       setState(() {
         _yukleniyor = true;
       });
+
+      try {
+        await _yetkilendirmeServisi.mailIleGiris(email!, sifre!);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => TabBarMain()));
+      } catch (hata) {
+        setState(() {
+          _yukleniyor = false;
+        });
+        uyariGoster(hataKodu: hata.hashCode);
+        print(hata.toString());
+        print(hata.hashCode);
+      }
+    }
+  }
+
+  uyariGoster({hataKodu}) {
+    String? hataMesaji;
+
+    if (hataKodu == 505284406) {
+      hataMesaji = "Böyle bir kullanıcı bulunmuyor.";
+    } else if (hataKodu == 360587416) {
+      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
+    } else if (hataKodu == 185768934) {
+      hataMesaji = "Girilen şifre hatalı.";
+    } else if (hataKodu == 446151799) {
+      hataMesaji = "Kullanıcı engellenmiş.";
+    } else {
+      hataMesaji = "Bir hata oluştu.";
+    }
+
+    var snackBar = SnackBar(content: Text('$hataMesaji'));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
+  void _googleIleGiris() async {
+    var _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
+
+    setState(() {
+      _yukleniyor = true;
+    });
+    try {
+      Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
+      if (kullanici != null) {
+        Kullanici? firestoreKullanici =
+            await FirestoreServisi().kullaniciGetir(kullanici.id);
+        if (firestoreKullanici == null) {
+          FirestoreServisi().kullaniciOlustur(
+              id: kullanici.id,
+              email: kullanici.email,
+              adSoyad: kullanici.adSoyad,
+              fotoUrl: kullanici.fotoUrl);
+        }
+      }
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => TabBarMain()));
+    } catch (hata) {
+      if (mounted) {
+        setState(() {
+          _yukleniyor = false;
+        });
+      }
+      uyariGoster(hataKodu: hata.hashCode);
+      print(hata.toString());
+      print(hata.hashCode);
     }
   }
 
   Widget get _googleGirisBtn => InkWell(
-        onTap: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => TabBarMain()));
-        },
+        onTap: _googleIleGiris,
         child: Container(
             width: MediaQuery.of(context).size.width * 0.9,
             height: MediaQuery.of(context).size.height * 0.07,
@@ -310,7 +400,7 @@ class _GirisSayfaState extends State<GirisSayfa> {
             ])),
       );
 
-  Widget get _hesapOlusturBtn => Row(
+  Widget get _hesapOlusturNavigator => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(

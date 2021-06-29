@@ -1,8 +1,12 @@
-import 'package:event_app/model/tabbar_view.dart';
-import 'package:event_app/model/widthAndHeight.dart';
+import 'package:event_app/model/kullanici.dart';
+import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/viewModel/tabbar_view.dart';
+import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class KayitSayfa extends StatefulWidget {
   const KayitSayfa({Key? key}) : super(key: key);
@@ -14,11 +18,14 @@ class KayitSayfa extends StatefulWidget {
 class _KayitSayfaState extends State<KayitSayfa> {
   bool isObscureTextTrue = true;
   final _formAnahtari = GlobalKey<FormState>();
+  final _scaffoldAnahtari = GlobalKey<ScaffoldState>();
   bool _yukleniyor = false;
+  String? adSoyad, email, sifre;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
+        key: _scaffoldAnahtari,
         body: Stack(
           children: [
             _sayfaElemanlari(),
@@ -29,8 +36,10 @@ class _KayitSayfaState extends State<KayitSayfa> {
 
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
-      return Center(
-        child: CircularProgressIndicator(),
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     } else {
       return Center();
@@ -52,9 +61,9 @@ class _KayitSayfaState extends State<KayitSayfa> {
           boslukHeight(context, 0.03),
           _sifreTextField,
           boslukHeight(context, 0.03),
-          _girisYapBtn,
+          _hesapOlusturBtn,
           boslukHeight(context, 0.03),
-          _googleGirisBtn,
+          _googleKayitBtn,
           _expandedHeight,
           _girisYapNavigator,
           boslukHeight(context, 0.05),
@@ -150,6 +159,9 @@ class _KayitSayfaState extends State<KayitSayfa> {
             }
             return null;
           },
+          onSaved: (deger) {
+            adSoyad = deger;
+          },
         ),
       );
 
@@ -205,6 +217,9 @@ class _KayitSayfaState extends State<KayitSayfa> {
               return 'Girilen değer mail formatında olmalı';
             }
             return null;
+          },
+          onSaved: (deger) {
+            email = deger;
           },
         ),
       );
@@ -273,11 +288,19 @@ class _KayitSayfaState extends State<KayitSayfa> {
             }
             return null;
           },
+          onSaved: (deger) {
+            sifre = deger;
+          },
         ),
       );
 
-  Widget get _girisYapBtn => InkWell(
-        onTap: _girisYap,
+  Widget get _expandedHeight => Expanded(
+          child: SizedBox(
+        height: 0,
+      ));
+
+  Widget get _hesapOlusturBtn => InkWell(
+        onTap: _hesapOlustur,
         child: Container(
           width: MediaQuery.of(context).size.width * 0.9,
           height: MediaQuery.of(context).size.height * 0.07,
@@ -299,20 +322,56 @@ class _KayitSayfaState extends State<KayitSayfa> {
         ),
       );
 
-  Widget get _expandedHeight => Expanded(
-          child: SizedBox(
-        child: Text(''),
-      ));
+  Future<void> _hesapOlustur() async {
+    final _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
 
-  void _girisYap() {
-    if (_formAnahtari.currentState!.validate()) {
+    var _formState = _formAnahtari.currentState;
+
+    if (_formState!.validate()) {
+      _formState.save();
+      FocusScope.of(context).unfocus();
       setState(() {
         _yukleniyor = true;
       });
+
+      try {
+        Kullanici? kullanici =
+            await _yetkilendirmeServisi.mailIleKayit(email!, sifre!);
+        if (kullanici != null) {
+          FirestoreServisi().kullaniciOlustur(
+              id: kullanici.id, email: email, adSoyad: adSoyad);
+        }
+        Navigator.pop(context);
+      } catch (hata) {
+        setState(() {
+          _yukleniyor = false;
+        });
+
+        uyariGoster(hataKodu: hata.hashCode);
+        print(hata.hashCode);
+      }
     }
   }
 
-  Widget get _googleGirisBtn => InkWell(
+  uyariGoster({hataKodu}) {
+    String? hataMesaji;
+
+    if (hataKodu == 360587416) {
+      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
+    } else if (hataKodu == 34618382) {
+      hataMesaji = "Girdiğiniz mail kayıtlıdır.";
+    } else if (hataKodu == 265778269) {
+      hataMesaji = "Daha zor bir şifre tercih edin.";
+    } else {
+      hataMesaji = "Bir hata oluştu.";
+    }
+
+    var snackBar = SnackBar(content: Text('$hataMesaji'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Widget get _googleKayitBtn => InkWell(
         onTap: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => TabBarMain()));
