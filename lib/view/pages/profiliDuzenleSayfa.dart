@@ -67,7 +67,6 @@ class _ProfiliDuzenleSayfaState extends State<ProfiliDuzenleSayfa> {
                 child: IconButton(
                   onPressed: () {
                     _kaydet();
-                    print('buraya kadar geldik');
                   },
                   icon: Icon(
                     FontAwesomeIcons.check,

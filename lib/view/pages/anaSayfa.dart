@@ -126,10 +126,12 @@ class _AnaSayfaState extends State<AnaSayfa>
   }
 
   String _sadeceIsim(Kullanici profilData) {
-    var isimFull = profilData.adSoyad;
-    var parts = isimFull!.split(' ');
-    var isim = parts[0].trim();
-    return isim;
+    if (mounted ){
+      var isimFull = profilData.adSoyad;
+      var parts = isimFull!.split(' ');
+      var isim = parts[0].trim();
+      return isim;
+    }return "null";
   }
 
   Widget get _randomText => Text(

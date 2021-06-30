@@ -2,9 +2,11 @@ import 'dart:math';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/auth/sifremiDegistir.dart';
 import 'package:event_app/view/pages/profiliDuzenleSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -17,15 +19,21 @@ class ProfilSayfa extends StatefulWidget {
   State<ProfilSayfa> createState() => _ProfilSayfaState();
 }
 
-class _ProfilSayfaState extends State<ProfilSayfa>
-    with AutomaticKeepAliveClientMixin {
+class _ProfilSayfaState extends State<ProfilSayfa> {
   Kullanici? _profilSahibi;
+  User? user = FirebaseAuth.instance.currentUser;
+
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    super.initState();
+    if (user!.emailVerified) {
+      FirestoreServisi().dogrulamaGuncelle(
+          kullaniciId: widget.profilSahibiId, dogrulandiMi: "true");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -49,7 +57,7 @@ class _ProfilSayfaState extends State<ProfilSayfa>
             );
           }
           _profilSahibi = snapshot.data as Kullanici;
-          print("bu bir deneme" + _profilSahibi.toString());
+          //print("bu bir deneme" + _profilSahibi.toString());
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -61,7 +69,7 @@ class _ProfilSayfaState extends State<ProfilSayfa>
                 _customDivider,
                 _profiliDuzenleListTile(_profilSahibi!),
                 _customDivider,
-                _sifremiDegistirListTile(),
+                _sifremiDegistirListTile(_profilSahibi!),
                 _customDivider,
                 _yardimListTile,
                 _customDivider,
@@ -185,6 +193,8 @@ class _ProfilSayfaState extends State<ProfilSayfa>
   //                             ".svg?background=%232f3136"
 
   Widget _emailListTile(Kullanici? profilData) {
+    User? user = FirebaseAuth.instance.currentUser;
+
     return ListTile(
       minVerticalPadding: 0,
       horizontalTitleGap: 0,
@@ -202,15 +212,26 @@ class _ProfilSayfaState extends State<ProfilSayfa>
       trailing: OutlinedButton(
           style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).primaryColor)),
-          onPressed: () {
-            //TODO: maili onaylanacak snackbar gösterilecek kod gönderilecek
-            var snackBar = SnackBar(content: Text('Mailine link gönderdik.'));
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          onPressed: () async {
+            if (!user!.emailVerified) {
+              await user.sendEmailVerification();
+              var snackBar = SnackBar(
+                  content: Text('Mail adresinize doğrulama linki gönderdik.'));
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            } else {
+              FirestoreServisi().dogrulamaGuncelle(
+                  kullaniciId: widget.profilSahibiId, dogrulandiMi: "true");
+              var snackBar =
+                  SnackBar(content: Text('Mailiniz çoktan doğrulandı.'));
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
             }
           },
           child: Text(
-            profilData.dogrulandiMi == "true" ? 'Doğrulandı' : 'Doğrula',
+            user!.emailVerified == true ? 'Doğrulandı' : 'Doğrula',
             style: TextStyle(
                 color: Theme.of(context).primaryColor,
                 // fontSize: 20,
@@ -219,6 +240,24 @@ class _ProfilSayfaState extends State<ProfilSayfa>
           )),
     );
   }
+
+  // _dogrulamaMailGonder() async {
+  //   if (_dogrulandi == true) {
+  //     var snackBar =
+  //         SnackBar(content: Text('Mail adresinizi zaten doğruladınız.'));
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //     }
+  //   } else {
+  //     await Provider.of<YetkilendirmeServisi>(context, listen: false)
+  //         .mailiOnayla();
+  //     var snackBar = SnackBar(
+  //         content: Text('Doğrulama linki mail adresinize gönderildi.'));
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  //     }
+  //   }
+  // }
 
   Widget _profiliDuzenleListTile(Kullanici profilData) {
     return InkWell(
@@ -252,11 +291,16 @@ class _ProfilSayfaState extends State<ProfilSayfa>
     );
   }
 
-  Widget _sifremiDegistirListTile() {
+  Widget _sifremiDegistirListTile(Kullanici profilData) {
     return InkWell(
       onTap: () {
         //TODO: Şifremi değiştir sayfasına gidecek
-        print("Şifremi değiştir sayfasına gidecek");
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SifremiDegistirSayfa(
+                      profilSahibiId: profilData,
+                    )));
       },
       child: ListTile(
         minVerticalPadding: 0,

@@ -36,10 +36,8 @@ class _KayitSayfaState extends State<KayitSayfa> {
 
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
-      return Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+      return Center(
+        child: CircularProgressIndicator(),
       );
     } else {
       return Center();

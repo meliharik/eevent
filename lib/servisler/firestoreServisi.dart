@@ -27,14 +27,17 @@ class FirestoreServisi {
   }
 
   void kullaniciGuncelle(
-      {String? kullaniciId,
-      String? adSoyad,
-      String fotoUrl = "",
-      String? dogrulandiMi}) {
-    _firestore.collection("kullanicilar").doc(kullaniciId).update({
-      "adSoyad": adSoyad,
-      "dogrulandiMi": dogrulandiMi,
-      "fotoUrl": fotoUrl
-    });
+      {String? kullaniciId, String? adSoyad, String fotoUrl = ""}) {
+    _firestore
+        .collection("kullanicilar")
+        .doc(kullaniciId)
+        .update({"adSoyad": adSoyad, "fotoUrl": fotoUrl});
+  }
+
+  void dogrulamaGuncelle({String? kullaniciId, String? dogrulandiMi}) {
+    _firestore
+        .collection("kullanicilar")
+        .doc(kullaniciId)
+        .update({"dogrulandiMi": dogrulandiMi});
   }
 }

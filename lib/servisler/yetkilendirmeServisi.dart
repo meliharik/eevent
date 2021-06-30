@@ -38,6 +38,14 @@ class YetkilendirmeServisi {
     return _kullaniciOlustur(girisKarti.user);
   }
 
+  Future<void> sifremiSifirla(String eposta) async {
+    await _firebaseAuth.sendPasswordResetEmail(email: eposta);
+  }
+
+  Future<void> mailiOnayla() async {
+    await _firebaseAuth.currentUser!.sendEmailVerification();
+  }
+
   Future<void> cikisYap() {
     return _firebaseAuth.signOut();
   }

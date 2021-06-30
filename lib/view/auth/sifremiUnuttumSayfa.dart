@@ -1,7 +1,9 @@
+import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
 
 class SifremiUnuttumSayfa extends StatefulWidget {
   const SifremiUnuttumSayfa({Key? key}) : super(key: key);
@@ -12,6 +14,10 @@ class SifremiUnuttumSayfa extends StatefulWidget {
 
 class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
   final _formAnahtari = GlobalKey<FormState>();
+  final _scaffoldAnahtari = GlobalKey<ScaffoldState>();
+
+  bool _yukleniyor = false;
+  String? _email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,6 +49,11 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
           key: _formAnahtari,
           child: Column(
             children: [
+              _yukleniyor
+                  ? LinearProgressIndicator()
+                  : SizedBox(
+                      height: 0,
+                    ),
               _lottieAnimation,
               boslukHeight(context, 0.01),
               _sifremiUnuttumText,
@@ -138,13 +149,14 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
             }
             return null;
           },
+          onSaved: (girilenDeger) {
+            _email = girilenDeger;
+          },
         ),
       );
 
   Widget get _sifirlaBtn => InkWell(
-        onTap: () {
-          _sifreyiSifirla();
-        },
+        onTap: _sifreyiSifirla,
         child: Container(
           width: MediaQuery.of(context).size.width * 0.9,
           height: MediaQuery.of(context).size.height * 0.07,
@@ -166,27 +178,66 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
         ),
       );
 
-  void _sifreyiSifirla() {
+  void _sifreyiSifirla() async {
+    final _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
     if (_formAnahtari.currentState!.validate()) {
-      showModalBottomSheet(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50), topRight: Radius.circular(50))),
-          context: context,
-          builder: (context) {
-            return Column(
-              children: [
-                Lottie.asset('assets/lottie/tick.json',
-                    repeat: false,
-                    height: MediaQuery.of(context).size.height * 0.25),
-                _bottomSheetBasarili,
-                _bottomSheetAciklama,
-                boslukHeight(context, 0.04),
-                _tamamBtn,
-              ],
-            );
-          });
+      _formAnahtari.currentState!.save();
+      FocusScope.of(context).unfocus();
+
+      setState(() {
+        _yukleniyor = true;
+      });
+      try {
+        await _yetkilendirmeServisi.sifremiSifirla(_email!);
+        setState(() {
+          _yukleniyor = false;
+        });
+        showModalBottomSheet(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(50),
+                    topRight: Radius.circular(50))),
+            context: context,
+            builder: (context) {
+              return Column(
+                children: [
+                  Lottie.asset('assets/lottie/email_sent.json',
+                      repeat: false,
+                      height: MediaQuery.of(context).size.height * 0.25),
+                  _bottomSheetBasarili,
+                  _bottomSheetAciklama,
+                  boslukHeight(context, 0.04),
+                  _tamamBtn,
+                ],
+              );
+            });
+      } catch (hata) {
+        setState(() {
+          _yukleniyor = false;
+        });
+        uyariGoster(hataKodu: hata.hashCode);
+      }
     }
+  }
+
+  uyariGoster({hataKodu}) {
+    String? hataMesaji;
+
+    if (hataKodu == 360587416) {
+      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
+    } else if (hataKodu == 34618382) {
+      hataMesaji = "Girdiğiniz mail kayıtlıdır.";
+    } else if (hataKodu == 265778269) {
+      hataMesaji = "Daha zor bir şifre tercih edin.";
+    } else if (hataKodu == 505284406) {
+      hataMesaji = "Bu mail adresine kayıtlı bir kullanıcı bulunmuyor.";
+    } else {
+      hataMesaji = "Bir hata oluştu.";
+    }
+
+    var snackBar = SnackBar(content: Text('$hataMesaji'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   Widget get _bottomSheetBasarili => Text(
