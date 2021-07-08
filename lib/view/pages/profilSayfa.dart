@@ -294,7 +294,6 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
   Widget _sifremiDegistirListTile(Kullanici profilData) {
     return InkWell(
       onTap: () {
-        //TODO: Şifremi değiştir sayfasına gidecek
         Navigator.push(
             context,
             MaterialPageRoute(

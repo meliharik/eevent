@@ -378,6 +378,8 @@ class _GirisSayfaState extends State<GirisSayfa> {
       hataMesaji = "Bir hata oluştu.";
     }
 
+    // 474761051 The service is currently unavailable. This is a most likely a transient condition and may be corrected by retrying with a backoff.
+
     var snackBar = SnackBar(content: Text('$hataMesaji'));
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(snackBar);

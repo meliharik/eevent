@@ -1,7 +1,10 @@
 import 'dart:math';
-
+import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/view/hepsiniGor/buHaftaHepsiniGorSayfa.dart';
+import 'package:event_app/view/hepsiniGor/bugunHepsiniGorSayfa.dart';
+import 'package:event_app/view/hepsiniGor/populerHepsiniGorSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +23,45 @@ class _AnaSayfaState extends State<AnaSayfa>
     with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
+  List<Etkinlik> _etkinlikler = [];
+
+  @override
+  void initState() {
+    super.initState();
+    populerEtkinlikleriGetir();
+    buHaftaEtkinlikleriGetir();
+    bugunEtkinlikleriGetir();
+  }
+
+  Future<void> populerEtkinlikleriGetir() async {
+    List<Etkinlik> etkinlikler =
+        await FirestoreServisi().populerEtkinlikleriGetir(true);
+    if (mounted) {
+      setState(() {
+        _etkinlikler = etkinlikler;
+      });
+    }
+  }
+
+  Future<void> buHaftaEtkinlikleriGetir() async {
+    List<Etkinlik> etkinlikler =
+        await FirestoreServisi().buHaftaEtkinlikleriGetir(true);
+    if (mounted) {
+      setState(() {
+        _etkinlikler = etkinlikler;
+      });
+    }
+  }
+
+  Future<void> bugunEtkinlikleriGetir() async {
+    List<Etkinlik> etkinlikler =
+        await FirestoreServisi().bugunEtkinlikleriGetir(true);
+    if (mounted) {
+      setState(() {
+        _etkinlikler = etkinlikler;
+      });
+    }
+  }
 
   String _randomTextler() {
     var _random = Random();
@@ -115,23 +157,26 @@ class _AnaSayfaState extends State<AnaSayfa>
   }
 
   _selamText(Kullanici profilData) {
-    return Text(
-      "Selam " + _sadeceIsim(profilData).toString(),
-      style: TextStyle(
-          color: Color(0xff252745),
-          fontSize: MediaQuery.of(context).size.height * 0.035,
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w800),
+    return Center(
+      child: Text(
+        "Selam " + _sadeceIsim(profilData).toString(),
+        style: TextStyle(
+            color: Color(0xff252745),
+            fontSize: MediaQuery.of(context).size.height * 0.035,
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w800),
+      ),
     );
   }
 
   String _sadeceIsim(Kullanici profilData) {
-    if (mounted ){
+    if (mounted) {
       var isimFull = profilData.adSoyad;
       var parts = isimFull!.split(' ');
       var isim = parts[0].trim();
       return isim;
-    }return "null";
+    }
+    return "null";
   }
 
   Widget get _randomText => Text(
@@ -144,167 +189,213 @@ class _AnaSayfaState extends State<AnaSayfa>
       );
 
   Widget get _popularCardlar => Container(
-        height: MediaQuery.of(context).size.height * 0.33,
+        height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            customCard('Mobil Programlama', 'Yazılım & Tasarım',
-                '01:00 - 17:00', 'mobil', 'Ocak', 07),
-            customCard('Yapay Zeka 101', 'Yazılım & Yapay Zeka',
-                '12:00 - 15:00', 'robot', 'Aralık', 29),
-            customCard('Wine Tasting', 'Wine & Design', '07:30 PM - 09:00 PM',
-                'wine', 'Ağustos', 30),
-          ],
+        child: FutureBuilder<List<Etkinlik>>(
+          future: FirestoreServisi().populerEtkinlikleriGetir(true),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.data!.length == 0) {
+              return Center(child: Text("Popüler olan etkinlik hiç yok :("));
+            }
+
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Etkinlik etkinlik = snapshot.data![index];
+                return buildCard(etkinlik);
+              },
+            );
+          },
         ),
       );
 
   Widget get _buHaftaCardlar => Container(
-        height: MediaQuery.of(context).size.height * 0.33,
+        height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            customCard('Hatalar Nasıl\nDüzeltilmez', 'Yazılım & Tasarım',
-                '01:00 - 17:00', 'hataDuzeltme', 'Mayıs', 26),
-            customCard('Network oluşturma', 'Global & Gelişim', '12:00 - 15:00',
-                'network', 'Mayıs', 29),
-            customCard('Wine Tasting', 'Wine & Design', '07:30 PM - 09:00 PM',
-                'cooking', 'Mayıs', 23),
-          ],
+        child: FutureBuilder<List<Etkinlik>>(
+          future: FirestoreServisi().buHaftaEtkinlikleriGetir(true),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.data!.length == 0) {
+              return Center(child: Text("Bu hafta hiç etkinlik yok :("));
+            }
+
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Etkinlik etkinlik = snapshot.data![index];
+                return buildCard(etkinlik);
+              },
+            );
+          },
         ),
       );
 
   Widget get _bugunCardlar => Container(
-        height: MediaQuery.of(context).size.height * 0.33,
+        height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            customCard('Yapay Zeka Üzerine\nSohbet', 'Mutfak & Yemek',
-                '01:00 - 17:00', 'robot', 'Temmuz', 18),
-            customCard('Network oluşturma', 'Global & Gelişim', '12:00 - 15:00',
-                'network', 'Temmuz', 18),
-            customCard('Wine Tasting', 'Wine & Design', '07:30 PM - 09:00 PM',
-                'wine', 'Temmuz', 18),
-          ],
+        child: FutureBuilder<List<Etkinlik>>(
+          future: FirestoreServisi().bugunEtkinlikleriGetir(true),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.data!.length == 0) {
+              return Center(child: Text("Bugün hiç etkinlik yok :("));
+            }
+
+            return ListView.builder(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                Etkinlik etkinlik = snapshot.data![index];
+                return buildCard(etkinlik);
+              },
+            );
+          },
         ),
       );
 
-  Widget customCard(String baslik, String kategori, String saat, String foto,
-      String ay, int gun) {
+  String _gunuBulma(Etkinlik etkinlik) {
+    if (mounted) {
+      var tarihFull = etkinlik.tarih;
+      var parts = tarihFull!.split('/');
+      var gunTemp = parts[0].trim();
+      var parts2 = gunTemp.split('');
+
+      if (parts2[0] == '0') {
+        return parts2[1];
+      }
+
+      return gunTemp;
+    }
+    return "null";
+  }
+
+  String _ayBulma(Etkinlik etkinlik) {
+    final List<String> aylar = [
+      "Ocak",
+      "Şubat",
+      "Mart",
+      "Nisan",
+      "Mayıs",
+      "Haziran",
+      "Temmuz",
+      "Ağustos",
+      "Eylül",
+      "Ekim",
+      "Kasım",
+      "Aralık"
+    ];
+    if (mounted) {
+      var tarihFull = etkinlik.tarih;
+      var parts = tarihFull!.split('/');
+      var ayTemp = parts[1];
+      int ay = int.parse(ayTemp);
+      return aylar[ay - 1];
+    }
+    return "null";
+  }
+
+  buildCard(Etkinlik etkinlik) {
     return Row(
       children: [
-        boslukWidth(context, 0.02),
+        boslukWidth(context, 0.04),
         Stack(
           children: [
-            InkWell(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EtkinlikDetaySayfa(
-                              baslik: baslik,
-                              foto: foto,
-                            )));
-              },
-              child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30)),
-                elevation: 3,
-                child: Container(
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 4,
-                        child: Container(
-                          child: Center(
-                            child: Image.asset(
-                              "assets/images/$foto.png",
-                              //fit: BoxFit.fitWidth,
-                              width: double.infinity,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                          flex: 6,
-                          child: Row(
-                            children: [
-                              boslukWidth(context, 0.03),
-                              Column(
-                                //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            Card(
+              elevation: 2,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EtkinlikDetaySayfa(
+                                  aktifKullaniciId: widget.aktifKullaniciId,
+                                  etkinlikData: etkinlik,
+                                )));
+                  },
+                  child: Container(
+                      decoration: BoxDecoration(color: Colors.white),
+                      // height: MediaQuery.of(context).size.height * 0.6,
+                      width: MediaQuery.of(context).size.width * 0.45,
+                      child: Column(
+                        children: [
+                          Expanded(
+                              flex: 6,
+                              child: Image.network(
+                                etkinlik.etkinlikResmiUrl.toString(),
+                                fit: BoxFit.fill,
+                              )),
+                          Expanded(
+                            flex: 4,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  boslukHeight(context, 0.023),
-                                  Wrap(
-                                    children: [
-                                      Text(
-                                        '$baslik',
-                                        style: TextStyle(
-                                          fontFamily: 'Manrope',
-                                          fontWeight: FontWeight.w800,
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.025,
-                                          color: Color(0xff252745),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  boslukHeight(context, 0.006),
                                   Text(
-                                    '$kategori',
+                                    etkinlik.baslik.toString(),
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontWeight: FontWeight.w800,
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.02,
+                                      color: Color(0xff252745).withOpacity(0.9),
+                                    ),
+                                  ),
+                                  Text(
+                                    etkinlik.kategori.toString(),
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                      fontFamily: 'Manrope',
+                                      fontWeight: FontWeight.w600,
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.018,
+                                      color: Color(0xff252745).withOpacity(0.6),
+                                    ),
+                                  ),
+                                  Text(
+                                    etkinlik.saat.toString(),
+                                    overflow: TextOverflow.clip,
                                     style: TextStyle(
                                       fontFamily: 'Manrope',
                                       fontWeight: FontWeight.w400,
                                       fontSize:
                                           MediaQuery.of(context).size.height *
-                                              0.02,
-                                      color: Color(0xff252745).withOpacity(0.8),
+                                              0.016,
+                                      color: Color(0xff252745).withOpacity(0.5),
                                     ),
                                   ),
-                                  boslukHeight(context, 0.0066),
-                                  Text(
-                                    '$saat',
-                                    style: TextStyle(
-                                      fontFamily: 'Manrope',
-                                      fontWeight: FontWeight.w400,
-                                      fontSize:
-                                          MediaQuery.of(context).size.height *
-                                              0.02,
-                                      color: Color(0xff252745).withOpacity(0.8),
-                                    ),
-                                  )
                                 ],
                               ),
-                              Expanded(child: SizedBox()),
-                              Column(
-                                children: [
-                                  Expanded(child: SizedBox()),
-                                  Icon(
-                                    FontAwesomeIcons.heart,
-                                    size: MediaQuery.of(context).size.height *
-                                        0.022,
-                                    color: Colors.grey.withOpacity(0.7),
-                                  ),
-                                  boslukHeight(context, 0.03),
-                                ],
-                              ),
-                              boslukWidth(context, 0.035)
-                            ],
-                          )),
-                    ],
-                  ),
+                            ),
+                          )
+                        ],
+                      )),
                 ),
               ),
             ),
             Row(
               children: [
-                boslukWidth(context, 0.5),
+                boslukWidth(context, 0.25),
                 Column(
                   children: [
                     boslukHeight(context, 0.12),
@@ -312,32 +403,32 @@ class _AnaSayfaState extends State<AnaSayfa>
                         elevation: 3,
                         child: Row(
                           children: [
-                            boslukWidth(context, 0.02),
+                            boslukWidth(context, 0.01),
                             Column(
                               children: [
                                 Text(
-                                  '$gun',
+                                  _gunuBulma(etkinlik),
                                   style: TextStyle(
                                       color: Theme.of(context).primaryColor,
                                       fontSize:
                                           MediaQuery.of(context).size.height *
-                                              0.025,
+                                              0.022,
                                       fontFamily: 'Manrope',
                                       fontWeight: FontWeight.w800),
                                 ),
                                 Text(
-                                  '$ay',
+                                  _ayBulma(etkinlik),
                                   style: TextStyle(
                                       color: Color(0xff252745),
                                       fontSize:
                                           MediaQuery.of(context).size.height *
-                                              0.018,
+                                              0.016,
                                       fontFamily: 'Manrope',
                                       fontWeight: FontWeight.w800),
                                 )
                               ],
                             ),
-                            boslukWidth(context, 0.02),
+                            boslukWidth(context, 0.01),
                           ],
                         )),
                   ],
@@ -346,11 +437,239 @@ class _AnaSayfaState extends State<AnaSayfa>
               ],
             )
           ],
-        ),
-        boslukWidth(context, 0.02)
+        )
       ],
     );
   }
+
+  // etkinlikleriGoster() {
+  //   if (_etkinlikler!.isEmpty) {
+  //     return Center(
+  //       child: Text('Hiç duyurunuz yok'),
+  //     );
+  //   }
+  //   return ListView.builder(
+  //     itemCount: _etkinlikler!.length,
+  //     itemBuilder: (context, index) {
+  //       Etkinlik etkinlik = _etkinlikler![index];
+  //       return customCard(etkinlik.baslik.toString(), "kategori", "saat",
+  //           etkinlik.etkinlikResmiUrl.toString(), "ay", 26);
+  //     },
+  //   );
+  // }
+
+  // ListView.builder(
+  //     scrollDirection: Axis.horizontal,
+  //     itemCount: _etkinlikler.length,
+  //     itemBuilder: (context, index) {
+  //       return FutureBuilder(
+  //         future: FirestoreServisi().etkinlikleriGetir(),
+  //         builder: (context, snapshot) {
+  //           Etkinlik gelenVeri = snapshot.data as Etkinlik;
+  //           return customCard(
+  //               gelenVeri.baslik.toString(),
+  //               gelenVeri.kategori.toString(),
+  //               gelenVeri.saat.toString(),
+  //               gelenVeri.etkinlikResmiUrl.toString(),
+  //               "Mayıs",
+  //               23);
+  //         },
+  //       );
+  //     },
+  //   ),
+
+  // Widget get _buHaftaCardlar => Container(
+  //       height: MediaQuery.of(context).size.height * 0.33,
+  //       //width: MediaQuery.of(context).size.width * 0.38,
+  //       child: ListView(
+  //         scrollDirection: Axis.horizontal,
+  //         children: [
+  //           customCard('Hatalar Nasıl\nDüzeltilmez', 'Yazılım & Tasarım',
+  //               '01:00 - 17:00', 'hataDuzeltme', 'Mayıs', 26),
+  //           customCard('Network oluşturma', 'Global & Gelişim', '12:00 - 15:00',
+  //               'network', 'Mayıs', 29),
+  //           customCard('Wine Tasting', 'Wine & Design', '07:30 PM - 09:00 PM',
+  //               'cooking', 'Mayıs', 23),
+  //         ],
+  //       ),
+  //     );
+
+  // Widget get _bugunCardlar => Container(
+  //       height: MediaQuery.of(context).size.height * 0.33,
+  //       //width: MediaQuery.of(context).size.width * 0.38,
+  //       child: ListView(
+  //         scrollDirection: Axis.horizontal,
+  //         children: [
+  //           customCard('Yapay Zeka Üzerine\nSohbet', 'Mutfak & Yemek',
+  //               '01:00 - 17:00', 'robot', 'Temmuz', 18),
+  //           customCard('Network oluşturma', 'Global & Gelişim', '12:00 - 15:00',
+  //               'network', 'Temmuz', 18),
+  //           customCard('Wine Tasting', 'Wine & Design', '07:30 PM - 09:00 PM',
+  //               'wine', 'Temmuz', 18),
+  //         ],
+  //       ),
+  //     );
+
+  // Widget customCard(String baslik, String kategori, String saat, String foto,
+  //     String ay, int gun) {
+  //   return Row(
+  //     children: [
+  //       boslukWidth(context, 0.02),
+  //       Stack(
+  //         children: [
+  //           InkWell(
+  //             onTap: () {
+  //               Navigator.push(
+  //                   context,
+  //                   MaterialPageRoute(
+  //                       builder: (context) => EtkinlikDetaySayfa(
+  //                             baslik: baslik,
+  //                             foto: foto,
+  //                           )));
+  //             },
+  //             child: Card(
+  //               shape: RoundedRectangleBorder(
+  //                   borderRadius: BorderRadius.circular(30)),
+  //               elevation: 3,
+  //               child: Container(
+  //                 width: MediaQuery.of(context).size.width * 0.7,
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.start,
+  //                   children: [
+  //                     Expanded(
+  //                       flex: 4,
+  //                       child: Container(
+  //                         child: Center(
+  //                           child: Image.network(
+  //                             "$foto",
+  //                             //fit: BoxFit.fitWidth,
+  //                             width: double.infinity,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     Expanded(
+  //                         flex: 6,
+  //                         child: Row(
+  //                           children: [
+  //                             boslukWidth(context, 0.03),
+  //                             Column(
+  //                               //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //                               crossAxisAlignment: CrossAxisAlignment.start,
+  //                               children: [
+  //                                 boslukHeight(context, 0.023),
+  //                                 Wrap(
+  //                                   children: [
+  //                                     Text(
+  //                                       '$baslik',
+  //                                       style: TextStyle(
+  //                                         fontFamily: 'Manrope',
+  //                                         fontWeight: FontWeight.w800,
+  //                                         fontSize: MediaQuery.of(context)
+  //                                                 .size
+  //                                                 .height *
+  //                                             0.025,
+  //                                         color: Color(0xff252745),
+  //                                       ),
+  //                                     ),
+  //                                   ],
+  //                                 ),
+  //                                 boslukHeight(context, 0.006),
+  //                                 Text(
+  //                                   '$kategori',
+  //                                   style: TextStyle(
+  //                                     fontFamily: 'Manrope',
+  //                                     fontWeight: FontWeight.w400,
+  //                                     fontSize:
+  //                                         MediaQuery.of(context).size.height *
+  //                                             0.02,
+  //                                     color: Color(0xff252745).withOpacity(0.8),
+  //                                   ),
+  //                                 ),
+  //                                 boslukHeight(context, 0.0066),
+  //                                 Text(
+  //                                   '$saat',
+  //                                   style: TextStyle(
+  //                                     fontFamily: 'Manrope',
+  //                                     fontWeight: FontWeight.w400,
+  //                                     fontSize:
+  //                                         MediaQuery.of(context).size.height *
+  //                                             0.02,
+  //                                     color: Color(0xff252745).withOpacity(0.8),
+  //                                   ),
+  //                                 )
+  //                               ],
+  //                             ),
+  //                             Expanded(child: SizedBox()),
+  //                             Column(
+  //                               children: [
+  //                                 Expanded(child: SizedBox()),
+  //                                 Icon(
+  //                                   FontAwesomeIcons.heart,
+  //                                   size: MediaQuery.of(context).size.height *
+  //                                       0.022,
+  //                                   color: Colors.grey.withOpacity(0.7),
+  //                                 ),
+  //                                 boslukHeight(context, 0.03),
+  //                               ],
+  //                             ),
+  //                             boslukWidth(context, 0.035)
+  //                           ],
+  //                         )),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           Row(
+  //             children: [
+  //               boslukWidth(context, 0.5),
+  //               Column(
+  //                 children: [
+  //                   boslukHeight(context, 0.12),
+  //                   Card(
+  //                       elevation: 3,
+  //                       child: Row(
+  //                         children: [
+  //                           boslukWidth(context, 0.02),
+  //                           Column(
+  //                             children: [
+  //                               Text(
+  //                                 '$gun',
+  //                                 style: TextStyle(
+  //                                     color: Theme.of(context).primaryColor,
+  //                                     fontSize:
+  //                                         MediaQuery.of(context).size.height *
+  //                                             0.025,
+  //                                     fontFamily: 'Manrope',
+  //                                     fontWeight: FontWeight.w800),
+  //                               ),
+  //                               Text(
+  //                                 '$ay',
+  //                                 style: TextStyle(
+  //                                     color: Color(0xff252745),
+  //                                     fontSize:
+  //                                         MediaQuery.of(context).size.height *
+  //                                             0.018,
+  //                                     fontFamily: 'Manrope',
+  //                                     fontWeight: FontWeight.w800),
+  //                               )
+  //                             ],
+  //                           ),
+  //                           boslukWidth(context, 0.02),
+  //                         ],
+  //                       )),
+  //                 ],
+  //               ),
+  //               //boslukWidth(0.04),
+  //             ],
+  //           )
+  //         ],
+  //       ),
+  //       boslukWidth(context, 0.02)
+  //     ],
+  //   );
+  // }
 
   Widget get _populerRow => Row(
         children: [
@@ -367,9 +686,13 @@ class _AnaSayfaState extends State<AnaSayfa>
             child: SizedBox(),
           ),
           InkWell(
-            //TODO: popüler sayfaya geçecek
             onTap: () {
-              print("popüler olanların olduğu sayfaya gidecek.");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => PopulerHepsiniGorSayfa(
+                            aktifKullaniciId: widget.aktifKullaniciId,
+                          )));
             },
             child: Text(
               'Hepsini Gör',
@@ -398,9 +721,13 @@ class _AnaSayfaState extends State<AnaSayfa>
             child: SizedBox(),
           ),
           InkWell(
-            //TODO: bu haftakilerin olduğu sayfa
             onTap: () {
-              print("bu haftakilerin olduğu sayfaya gidecek.");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BuHaftaHepsiniGorSayfa(
+                            aktifKullaniciId: widget.aktifKullaniciId,
+                          )));
             },
             child: Text(
               'Hepsini Gör',
@@ -429,9 +756,13 @@ class _AnaSayfaState extends State<AnaSayfa>
             child: SizedBox(),
           ),
           InkWell(
-            //TODO: bugünkilerin olduğu sayfa
             onTap: () {
-              print("bugünkilerin olduğu sayfaya gidecek.");
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => BugunHepsiniGorSayfa(
+                            aktifKullaniciId: widget.aktifKullaniciId,
+                          )));
             },
             child: Text(
               'Hepsini Gör',

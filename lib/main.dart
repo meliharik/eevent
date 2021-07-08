@@ -1,5 +1,4 @@
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
-import 'package:event_app/view/viewModel/tabbar_view.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:event_app/view/auth/onBoardingSayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
@@ -20,7 +19,7 @@ Future<void> main() async {
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  initScreen = await prefs.getInt("initScreen");
+  initScreen = prefs.getInt("initScreen");
   await prefs.setInt("initScreen", 1);
   print('initScreen $initScreen');
   runApp(MyApp());

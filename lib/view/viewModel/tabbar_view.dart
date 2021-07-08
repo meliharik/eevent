@@ -1,4 +1,3 @@
-
 import 'package:event_app/view/pages/anaSayfa.dart';
 import 'package:event_app/view/pages/aramaSayfa.dart';
 import 'package:event_app/view/pages/biletlerimSayfa.dart';
@@ -47,7 +46,7 @@ class _TabBarMainState extends State<TabBarMain> {
           aktifKullaniciId: widget.aktifKullaniciId,
         ),
         AramaSayfa(),
-        BiletlerimSayfa(),
+        BiletlerimSayfa(profilSahibiId: widget.aktifKullaniciId),
         ProfilSayfa(
           profilSahibiId: widget.aktifKullaniciId,
         )

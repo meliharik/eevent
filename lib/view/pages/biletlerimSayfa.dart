@@ -1,10 +1,14 @@
+import 'package:event_app/model/etkinlik.dart';
+import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/biletDetaySayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BiletlerimSayfa extends StatefulWidget {
-  const BiletlerimSayfa({Key? key}) : super(key: key);
+  final String? profilSahibiId;
+  const BiletlerimSayfa({Key? key, this.profilSahibiId}) : super(key: key);
 
   @override
   _BiletlerimSayfaState createState() => _BiletlerimSayfaState();
@@ -16,6 +20,36 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
   bool get wantKeepAlive => true;
 
   int currentIndex = 1;
+  List<Etkinlik> _yaklasanBiletler = [];
+  List<Etkinlik> _gecmisBiletler = [];
+
+  Future<void> yaklasanBiletleriGetir() async {
+    List<Etkinlik> biletler = await FirestoreServisi()
+        .yaklasanBiletleriGetir(aktifKullaniciId: widget.profilSahibiId);
+    if (mounted) {
+      setState(() {
+        _yaklasanBiletler = biletler;
+      });
+    }
+  }
+
+  Future<void> gecmisBiletleriGetir() async {
+    List<Etkinlik> biletler = await FirestoreServisi()
+        .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId);
+    if (mounted) {
+      setState(() {
+        _gecmisBiletler = biletler;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    yaklasanBiletleriGetir();
+    gecmisBiletleriGetir();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -88,41 +122,210 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
     );
   }
 
-  Widget get _yaklasanlarTab => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-          child: Column(
-            children: [
-              _customCardYaklasanlar('Hatalar nasıl düzeltilmez', 'ornek1',
-                  '22 Temmuz 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('80 yılda öğrendiklerim', 'ornek2',
-                  '21 Haziran 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('Wine Tasting', 'cooking',
-                  '21 Haziran 2021, Pzr', '12:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('Mühendislik için\nokul şart mı?',
-                  'hataDuzeltme', '26 Mayıs 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('Mobil Programlama', 'mobil',
-                  '21 Haziran 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('Network oluşturma', 'network',
-                  '19 Ağustos 1987, Cma', '10:00 - 13:00'),
-              _customDivider,
-              _customCardYaklasanlar('Yapay Zeka 101', 'robot',
-                  '29 Nisan 2021, Cmt', '10:00 - 13:00'),
-            ],
+  Widget get _yaklasanlarTab => FutureBuilder<List<Etkinlik>>(
+        future: FirestoreServisi()
+            .yaklasanBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data!.length == 0) {
+            return Center(
+                child: Text(
+              "Hiç biletin yok :(",
+              style: TextStyle(
+                  color: Color(0xff252745),
+                  fontSize: MediaQuery.of(context).size.height * 0.02,
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w800),
+            ));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Etkinlik etkinlik = snapshot.data![index];
+              return buildBilet(etkinlik, false);
+            },
+          );
+        },
+      );
+
+  String _guneCevir(Etkinlik etkinlik) {
+    String gunTR = '';
+    final List<String> aylar = [
+      "Ocak",
+      "Şubat",
+      "Mart",
+      "Nisan",
+      "Mayıs",
+      "Haziran",
+      "Temmuz",
+      "Ağustos",
+      "Eylül",
+      "Ekim",
+      "Kasım",
+      "Aralık"
+    ];
+    var tarihFull = etkinlik.tarih;
+    var parts = tarihFull!.split('/');
+    var gunTemp = parts[0];
+    var ayTemp = parts[1];
+    var yilTemp = parts[2];
+
+    int gun = int.parse(gunTemp);
+    int ay = int.parse(ayTemp);
+    int yil = int.parse(yilTemp);
+
+    var dt = DateTime.utc(yil, ay, gun); // YYYY - MM - DD
+    var newFormat = DateFormat("EEEE");
+    String updatedDt = newFormat.format(dt);
+    if (updatedDt == 'Monday') {
+      gunTR = 'Pzt';
+    } else if (updatedDt == 'Tuesday') {
+      gunTR = 'Slı';
+    } else if (updatedDt == 'Wednesday') {
+      gunTR = 'Çrş';
+    } else if (updatedDt == 'Thursday') {
+      gunTR = 'Prş';
+    } else if (updatedDt == 'Friday') {
+      gunTR = 'Cma';
+    } else if (updatedDt == 'Saturday') {
+      gunTR = 'Cmt';
+    } else if (updatedDt == 'Sunday') {
+      gunTR = 'Pzr';
+    }
+    return gunTR +
+        ', ' +
+        gun.toString() +
+        ' ' +
+        aylar[ay - 1] +
+        ' ' +
+        yil.toString();
+  }
+
+  buildBilet(Etkinlik etkinlik, bool gecmisSecildi) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EtkinlikDetaySayfa(
+                      aktifKullaniciId: widget.profilSahibiId,
+                      etkinlikData: etkinlik,
+                    )));
+      },
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.15,
+        child: Card(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Row(
+              children: [
+                Container(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    child: Center(
+                        child: Image.network(
+                      etkinlik.etkinlikResmiUrl.toString(),
+                      fit: BoxFit.fill,
+                    ))),
+                boslukWidth(context, 0.02),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        etkinlik.baslik.toString(),
+                        overflow: TextOverflow.clip,
+                        style: TextStyle(
+                            color: Color(0xff252745),
+                            fontSize: MediaQuery.of(context).size.height * 0.02,
+                            fontFamily: 'Manrope',
+                            fontWeight: FontWeight.w800),
+                      ),
+                      boslukHeight(context, 0.006),
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Tarih',
+                                style: TextStyle(
+                                    color: Color(0xff252745),
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.018,
+                                    fontFamily: 'Manrope',
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              boslukHeight(context, 0.006),
+                              Text(
+                                _guneCevir(etkinlik),
+                                style: TextStyle(
+                                    color: gecmisSecildi
+                                        ? Color(0xffEF2E5B)
+                                        : Color(0xff252745),
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.018,
+                                    fontFamily: 'Manrope',
+                                    fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                          Expanded(
+                              child: SizedBox(
+                            height: 0,
+                          )),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Saat',
+                                style: TextStyle(
+                                    color: Color(0xff252745),
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.018,
+                                    fontFamily: 'Manrope',
+                                    fontWeight: FontWeight.w400),
+                              ),
+                              boslukHeight(context, 0.006),
+                              Text(
+                                etkinlik.saat.toString(),
+                                style: TextStyle(
+                                    color: gecmisSecildi
+                                        ? Color(0xffEF2E5B)
+                                        : Color(0xff252745),
+                                    fontSize:
+                                        MediaQuery.of(context).size.height *
+                                            0.018,
+                                    fontFamily: 'Manrope',
+                                    fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                          boslukWidth(context, 0.1),
+                        ],
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
-      );
+      ),
+    );
+  }
 
   Widget _customCardYaklasanlar(
       String baslik, String foto, String tarih, String saat) {
     return InkWell(
       onTap: () {
-        //TODO: bilet detay sayfasına gidecek
         // qr code site linki https://qrcode.tec-it.com/en
         print('bilet detay sayfasına gidecek');
         Navigator.push(
@@ -220,17 +423,32 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
     );
   }
 
-  Widget get _gecmisTab => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-          child: Column(
-            children: [
-              _customCardGecmis('Vakit geliyor geçiyor', 'ornek1',
-                  '22 Temmuz 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-            ],
-          ),
-        ),
+  Widget get _gecmisTab => FutureBuilder<List<Etkinlik>>(
+        future: FirestoreServisi()
+            .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data!.length == 0) {
+            return Center(
+                child: Text(
+              "Hiç biletin yok :(",
+              style: TextStyle(
+                  color: Color(0xff252745),
+                  fontSize: MediaQuery.of(context).size.height * 0.02,
+                  fontFamily: 'Manrope',
+                  fontWeight: FontWeight.w800),
+            ));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Etkinlik etkinlik = snapshot.data![index];
+              return buildBilet(etkinlik, true);
+            },
+          );
+        },
       );
 
   Widget _customCardGecmis(
@@ -356,8 +574,8 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             context,
             MaterialPageRoute(
                 builder: (context) => EtkinlikDetaySayfa(
-                      baslik: baslik,
-                      foto: foto,
+                      aktifKullaniciId: baslik,
+                      //etkinlikData: foto,
                     )));
       },
       child: Card(

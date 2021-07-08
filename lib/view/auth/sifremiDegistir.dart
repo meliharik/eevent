@@ -18,8 +18,8 @@ class SifremiDegistirSayfa extends StatefulWidget {
 class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
   String? mevcutSifre;
   String? yeniSifre;
-  bool isObscureTextTrue = false;
-  bool isObscureTextTrue2 = false;
+  bool isObscureTextTrue = true;
+  bool isObscureTextTrue2 = true;
   bool _yukleniyor = false;
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -62,8 +62,8 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
         ),
         body: Stack(
           children: [
-            _sayfaElemanlari,
             _yuklemeAnimasyonu(),
+            _sayfaElemanlari,
           ],
         ));
   }
@@ -85,7 +85,7 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
             children: [
               _lottieAnimation,
               _mevcutSifreTextField,
-              boslukHeight(context, 0.02),
+              boslukHeight(context, 0.015),
               _yeniSifreTextField,
               boslukHeight(context, 0.02),
               _kaydetBtn,
@@ -96,6 +96,7 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
 
   Widget get _lottieAnimation => Center(
         child: Lottie.asset('assets/lottie/lock_loading.json',
+            width: MediaQuery.of(context).size.width * 0.4,
             height: MediaQuery.of(context).size.height * 0.3),
       );
 
