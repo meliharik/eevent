@@ -5,6 +5,7 @@ import 'package:event_app/view/pages/biletDetaySayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class BiletlerimSayfa extends StatefulWidget {
   final String? profilSahibiId;
@@ -22,6 +23,7 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
   int currentIndex = 1;
   List<Etkinlik> _yaklasanBiletler = [];
   List<Etkinlik> _gecmisBiletler = [];
+  List<Etkinlik> _begenilenEtkinlikler = [];
 
   Future<void> yaklasanBiletleriGetir() async {
     List<Etkinlik> biletler = await FirestoreServisi()
@@ -43,11 +45,22 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
     }
   }
 
+  Future<void> begenilenEtkinlikleriGetir() async {
+    List<Etkinlik> etkinlikler = await FirestoreServisi()
+        .begenilenEtkinlikleriGetir(aktifKullaniciId: widget.profilSahibiId);
+    if (mounted) {
+      setState(() {
+        _begenilenEtkinlikler = etkinlikler;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     yaklasanBiletleriGetir();
     gecmisBiletleriGetir();
+    begenilenEtkinlikleriGetir();
   }
 
   @override
@@ -131,13 +144,20 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
           }
           if (snapshot.data!.length == 0) {
             return Center(
-                child: Text(
-              "Hiç biletin yok :(",
-              style: TextStyle(
-                  color: Color(0xff252745),
-                  fontSize: MediaQuery.of(context).size.height * 0.02,
-                  fontFamily: 'Manrope',
-                  fontWeight: FontWeight.w800),
+                child: Column(
+              children: [
+                Lottie.asset('assets/lottie/empty.json',
+                    height: MediaQuery.of(context).size.height * 0.15),
+                boslukHeight(context, 0.05),
+                Text(
+                  "Hiç biletin yok :(",
+                  style: TextStyle(
+                      color: Color(0xff252745),
+                      fontSize: MediaQuery.of(context).size.height * 0.022,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600),
+                )
+              ],
             ));
           }
           return ListView.builder(
@@ -322,107 +342,6 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
     );
   }
 
-  Widget _customCardYaklasanlar(
-      String baslik, String foto, String tarih, String saat) {
-    return InkWell(
-      onTap: () {
-        // qr code site linki https://qrcode.tec-it.com/en
-        print('bilet detay sayfasına gidecek');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => BiletDetaySayfa(
-                      baslik: baslik,
-                      foto: foto,
-                    )));
-      },
-      child: Card(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.15,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.height * 0.135,
-                  child: Center(
-                      child: Image.asset(
-                    'assets/images/$foto.png',
-                    fit: BoxFit.fill,
-                  ))),
-              boslukWidth(context, 0.03),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$baslik',
-                    style: TextStyle(
-                        color: Color(0xff252745),
-                        fontSize: 20,
-                        fontFamily: 'Manrope',
-                        fontWeight: FontWeight.w800),
-                  ),
-                  boslukHeight(context, 0.006),
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tarih',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 13,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w400),
-                          ),
-                          boslukHeight(context, 0.006),
-                          Text(
-                            '$tarih',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 15,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                      boslukWidth(context, 0.05),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Saat',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 13,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w400),
-                          ),
-                          boslukHeight(context, 0.006),
-                          Text(
-                            '$saat',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 15,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget get _gecmisTab => FutureBuilder<List<Etkinlik>>(
         future: FirestoreServisi()
             .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
@@ -432,13 +351,22 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
           }
           if (snapshot.data!.length == 0) {
             return Center(
-                child: Text(
-              "Hiç biletin yok :(",
-              style: TextStyle(
-                  color: Color(0xff252745),
-                  fontSize: MediaQuery.of(context).size.height * 0.02,
-                  fontFamily: 'Manrope',
-                  fontWeight: FontWeight.w800),
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset('assets/lottie/empty.json',
+                    height: MediaQuery.of(context).size.height * 0.15),
+                boslukHeight(context, 0.05),
+                Text(
+                  "Hiç geçmiş biletin yok :(",
+                  style: TextStyle(
+                      color: Color(0xff252745),
+                      fontSize: MediaQuery.of(context).size.height * 0.022,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600),
+                )
+              ],
             ));
           }
           return ListView.builder(
@@ -451,225 +379,40 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
         },
       );
 
-  Widget _customCardGecmis(
-      String baslik, String foto, String tarih, String saat) {
-    return Card(
-      child: Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.15,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-                width: MediaQuery.of(context).size.width * 0.3,
-                height: MediaQuery.of(context).size.height * 0.135,
-                child: Center(
-                    child: Image.asset(
-                  'assets/images/$foto.png',
-                  fit: BoxFit.fill,
-                ))),
-            boslukWidth(context, 0.03),
-            Column(
+  Widget get _begenilerTab => FutureBuilder<List<Etkinlik>>(
+        future: FirestoreServisi().begenilenEtkinlikleriGetir(
+            aktifKullaniciId: widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data!.length == 0) {
+            return Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Lottie.asset('assets/lottie/empty.json',
+                    height: MediaQuery.of(context).size.height * 0.15),
+                boslukHeight(context, 0.05),
                 Text(
-                  '$baslik',
+                  "Hiç beğendiğin etkinlik yok :(",
                   style: TextStyle(
                       color: Color(0xff252745),
-                      fontSize: 20,
+                      fontSize: MediaQuery.of(context).size.height * 0.022,
                       fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w800),
-                ),
-                boslukHeight(context, 0.006),
-                Row(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Tarih',
-                          style: TextStyle(
-                              color: Color(0xff252745),
-                              fontSize: 13,
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w400),
-                        ),
-                        boslukHeight(context, 0.006),
-                        Text(
-                          '$tarih',
-                          style: TextStyle(
-                              color: Color(0xffEF2E5B),
-                              fontSize: 15,
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w600),
-                        )
-                      ],
-                    ),
-                    boslukWidth(context, 0.05),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Saat',
-                          style: TextStyle(
-                              color: Color(0xff252745),
-                              fontSize: 13,
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w400),
-                        ),
-                        boslukHeight(context, 0.006),
-                        Text(
-                          '$saat',
-                          style: TextStyle(
-                              color: Color(0xff252745),
-                              fontSize: 15,
-                              fontFamily: 'Manrope',
-                              fontWeight: FontWeight.w600),
-                        )
-                      ],
-                    ),
-                  ],
+                      fontWeight: FontWeight.w600),
                 )
               ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget get _begenilerTab => SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 2.0),
-          child: Column(
-            children: [
-              _customCardBegeniler('Mühendislik için\nokul şart mı?',
-                  'hataDuzeltme', '26 Mayıs 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardBegeniler('Mobil Programlama', 'mobil',
-                  '21 Haziran 2021, Pzr', '10:00 - 13:00'),
-              _customDivider,
-              _customCardBegeniler('Network oluşturma', 'network',
-                  '19 Ağustos 1987, Cma', '10:00 - 13:00'),
-              _customDivider,
-              _customCardBegeniler('Yapay Zeka 101', 'robot',
-                  '29 Nisan 2021, Cmt', '10:00 - 13:00'),
-              _customDivider,
-              _customCardBegeniler('Resimdeki adam kim aq', 'ornek1',
-                  '19 Ağustos 1987, Cma', '10:00 - 13:00'),
-              _customDivider,
-            ],
-          ),
-        ),
-      );
-
-  Widget _customCardBegeniler(
-      String baslik, String foto, String tarih, String saat) {
-    return InkWell(
-      onTap: () {
-        //TODO: etkinlik detay sayfasına gidecek, kalp dolu olacak
-        print('etkinlik detay sayfasına gidecek, kalp dolu olacak');
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EtkinlikDetaySayfa(
-                      aktifKullaniciId: baslik,
-                      //etkinlikData: foto,
-                    )));
-      },
-      child: Card(
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height * 0.15,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  height: MediaQuery.of(context).size.height * 0.135,
-                  child: Center(
-                      child: Image.asset(
-                    'assets/images/$foto.png',
-                    fit: BoxFit.fill,
-                  ))),
-              boslukWidth(context, 0.03),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '$baslik',
-                    style: TextStyle(
-                        color: Color(0xff252745),
-                        fontSize: 20,
-                        fontFamily: 'Manrope',
-                        fontWeight: FontWeight.w800),
-                  ),
-                  boslukHeight(context, 0.006),
-                  Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tarih',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 13,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w400),
-                          ),
-                          boslukHeight(context, 0.006),
-                          Text(
-                            '$tarih',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 15,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                      boslukWidth(context, 0.05),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Saat',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 13,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w400),
-                          ),
-                          boslukHeight(context, 0.006),
-                          Text(
-                            '$saat',
-                            style: TextStyle(
-                                color: Color(0xff252745),
-                                fontSize: 15,
-                                fontFamily: 'Manrope',
-                                fontWeight: FontWeight.w600),
-                          )
-                        ],
-                      ),
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget get _customDivider => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Divider(
-          height: MediaQuery.of(context).size.height * 0.01,
-          color: Theme.of(context).primaryColor,
-        ),
+            ));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Etkinlik etkinlik = snapshot.data![index];
+              return buildBilet(etkinlik, false);
+            },
+          );
+        },
       );
 }

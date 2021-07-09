@@ -202,14 +202,70 @@ class FirestoreServisi {
 
         DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
             .parse(bilet.tarih.toString() + ' ' + bilet.saat.toString());
-        if ((etkinlik.id == bilet.id)) {
-          if (etkinlikZamani.isBefore(now)) {
-            biletler.add(bilet);
-          }
+        if ((etkinlik.id == bilet.id) && etkinlikZamani.isBefore(now)) {
+          biletler.add(bilet);
         }
       });
     });
     return biletler;
+  }
+
+  Future<List<Etkinlik>> begenilenEtkinlikleriGetir(
+      {String? aktifKullaniciId}) async {
+    QuerySnapshot snapshotBiletler = await _firestore
+        .collection("begeniler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBegenileri")
+        .orderBy("olusturulmaZamani", descending: false)
+        .get();
+
+    QuerySnapshot snapshotEtkinlikler =
+        await _firestore.collection("etkinlikler").get();
+
+    List<Etkinlik> biletler = [];
+    snapshotBiletler.docs.forEach((DocumentSnapshot doc) {
+      Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
+      snapshotEtkinlikler.docs.forEach((DocumentSnapshot doc2) {
+        Etkinlik bilet = Etkinlik.dokumandanUret(doc2);
+
+        if ((etkinlik.id == bilet.id)) {
+          biletler.add(bilet);
+        }
+      });
+    });
+    return biletler;
+  }
+
+  void begeniOlustur({String? etkinlikId, String? aktifKullaniciId}) async {
+    await _firestore
+        .collection("begeniler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBegenileri")
+        .doc(etkinlikId)
+        .set({"olusturulmaZamani": zaman});
+  }
+
+  Future<bool> begeniVarMi(
+      {String? etkinlikId, String? aktifKullaniciId}) async {
+    DocumentSnapshot doc = await _firestore
+        .collection("begeniler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBegenileri")
+        .doc(etkinlikId)
+        .get();
+    if (doc.exists) {
+      return true;
+    }
+    return false;
+  }
+
+  void begeniKaldir({String? etkinlikId, String? aktifKullaniciId}) async {
+    await _firestore
+        .collection("begeniler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBegenileri")
+        .doc(etkinlikId)
+        .delete();
   }
 
   void biletOlustur({String? etkinlikId, String? aktifKullaniciId}) {
@@ -233,6 +289,18 @@ class FirestoreServisi {
       return true;
     }
     return false;
+  }
+
+  Future<void> populerlikSayisiArtir(String? etkinlikId) async {
+    DocumentReference docRef =
+        _firestore.collection("etkinlikler").doc(etkinlikId);
+    DocumentSnapshot doc = await docRef.get();
+
+    if (doc.exists) {
+      Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
+      int yeniPopulerlikSayisi = etkinlik.populerlikSayisi! + 1;
+      docRef.update({"populerlikSayisi": yeniPopulerlikSayisi});
+    }
   }
 
   Future<Etkinlik?> etkinlikGetir(id) async {

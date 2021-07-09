@@ -2,6 +2,7 @@ import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +20,24 @@ class EtkinlikDetaySayfa extends StatefulWidget {
 
 class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
   bool _biletVarMi = false;
+  bool _begenildiMi = false;
   bool _yukleniyor = false;
+  bool _suresiGecmisMi = false;
+
+  _sureKontrol() {
+    var now = new DateTime.now();
+
+    DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm').parse(
+        widget.etkinlikData!.tarih.toString() +
+            ' ' +
+            widget.etkinlikData!.saat.toString());
+
+    if (etkinlikZamani.isBefore(now)) {
+      setState(() {
+        _suresiGecmisMi = true;
+      });
+    }
+  }
 
   _biletKontrol() async {
     bool biletVarMi = await FirestoreServisi().biletVarMi(
@@ -30,10 +48,21 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
     });
   }
 
+  _begeniKontrol() async {
+    bool begeniVarMi = await FirestoreServisi().begeniVarMi(
+        aktifKullaniciId: widget.aktifKullaniciId,
+        etkinlikId: widget.etkinlikData!.id);
+    setState(() {
+      _begenildiMi = begeniVarMi;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _biletKontrol();
+    _begeniKontrol();
+    _sureKontrol();
   }
 
   @override
@@ -159,11 +188,11 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                 //_etkinlikYer(),
                 //boslukHeight(context, 0.02),
                 _etkinlikFiyat(),
-                boslukHeight(context, 0.02),
+                boslukHeight(context, 0.025),
                 _etkinlikSertifika(),
-                boslukHeight(context, 0.02),
+                boslukHeight(context, 0.025),
                 _etkinlikKontenjan(),
-                boslukHeight(context, 0.02),
+                boslukHeight(context, 0.025),
                 _aciklamaBaslik,
                 boslukHeight(context, 0.01),
                 _aciklamaText,
@@ -180,31 +209,90 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
           height: MediaQuery.of(context).size.height * 0.09,
           width: MediaQuery.of(context).size.width * 0.7,
           decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: _suresiGecmisMi
+                  ? Color(0xffEF2E5B)
+                  : Theme.of(context).primaryColor,
               borderRadius: BorderRadius.circular(50)),
           child: Center(
-              child: Text(_biletVarMi ? 'Biletin Hazır' : 'Yerini Ayırt',
+              child: Text(butonText(),
                   style: TextStyle(
                       color: Theme.of(context).scaffoldBackgroundColor,
-                      fontSize: 25,
+                      fontSize: MediaQuery.of(context).size.height * 0.035,
                       fontFamily: 'Manrope',
                       fontWeight: FontWeight.w600))),
         ),
       );
 
-  biletAlma() async {
-    setState(() {
-      _yukleniyor = true;
-    });
-    try {
-      FirestoreServisi().biletOlustur(
-          aktifKullaniciId: widget.aktifKullaniciId,
-          etkinlikId: widget.etkinlikData!.id);
-      setState(() {
-        _yukleniyor = false;
-        _biletVarMi = true;
-      });
+  String butonText() {
+    if (_biletVarMi) {
+      if (_suresiGecmisMi) {
+        return 'Biletinizin süresi geçmiş';
+      } else {
+        return 'Biletin Hazır';
+      }
+    } else {
+      if (_suresiGecmisMi) {
+        return ' Etkinliğin süresi geçmiş';
+      } else {
+        return 'Yerini Ayırt';
+      }
+    }
+  }
 
+  biletAlma() async {
+    if (_suresiGecmisMi == false) {
+      if (_biletVarMi == false) {
+        setState(() {
+          _yukleniyor = true;
+        });
+        try {
+          FirestoreServisi().biletOlustur(
+              aktifKullaniciId: widget.aktifKullaniciId,
+              etkinlikId: widget.etkinlikData!.id);
+          FirestoreServisi().populerlikSayisiArtir(widget.etkinlikData!.id);
+          setState(() {
+            _yukleniyor = false;
+            _biletVarMi = true;
+          });
+
+          showModalBottomSheet(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50))),
+              context: context,
+              builder: (context) {
+                return Column(
+                  children: [
+                    boslukHeight(context, 0.02),
+                    Center(
+                      child: Lottie.asset('assets/lottie/ticket.json',
+                          repeat: false,
+                          height: MediaQuery.of(context).size.height * 0.2),
+                    ),
+                    _bottomSheetBasarili(true),
+                    boslukHeight(context, 0.02),
+                    _bottomSheetAciklama(true),
+                    boslukHeight(context, 0.04),
+                    _tamamBtn,
+                  ],
+                );
+              });
+        } catch (hata) {
+          setState(() {
+            _yukleniyor = false;
+          });
+          print("hata: " + hata.toString() + hata.hashCode.toString());
+          var snackBar = SnackBar(content: Text('Bir hata oluştu'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        var snackBar = SnackBar(content: Text('Bu bilete zaten sahipsiniz.'));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      }
+    } else {
       showModalBottomSheet(
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
@@ -215,43 +303,43 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
               children: [
                 Lottie.asset('assets/lottie/time.json',
                     height: MediaQuery.of(context).size.height * 0.25),
-                _bottomSheetBasarili,
-                _bottomSheetAciklama,
+                _bottomSheetBasarili(false),
+                boslukHeight(context, 0.02),
+                _bottomSheetAciklama(false),
                 boslukHeight(context, 0.04),
                 _tamamBtn,
               ],
             );
           });
-    } catch (hata) {
-      setState(() {
-        _yukleniyor = false;
-      });
-      print("hata: " + hata.toString() + hata.hashCode.toString());
-      var snackBar = SnackBar(content: Text('Bir hata oluştu'));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 
-  Widget get _bottomSheetBasarili => Text(
-        'Başarılı',
-        style: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w800,
-          fontSize: MediaQuery.of(context).size.height * 0.04,
-          color: Color(0xff252745),
-        ),
-      );
+  Widget _bottomSheetBasarili(bool basariliMi) {
+    return Text(
+      basariliMi ? 'Başarılı' : 'Başarısız',
+      style: TextStyle(
+        fontFamily: 'Manrope',
+        fontWeight: FontWeight.w800,
+        fontSize: MediaQuery.of(context).size.height * 0.04,
+        color: Color(0xff252745),
+      ),
+    );
+  }
 
-  Widget get _bottomSheetAciklama => Text(
-        'Biletin hazır. Biletlerim sekmesinden kontrol edebilirsin ;)',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w600,
-          fontSize: MediaQuery.of(context).size.height * 0.025,
-          color: Color(0xff252745).withOpacity(0.7),
-        ),
-      );
+  Widget _bottomSheetAciklama(bool basariliMi) {
+    return Text(
+      basariliMi
+          ? 'Biletin hazır. Biletlerim sekmesinden kontrol edebilirsin ;)'
+          : 'Maalesef etkinliğin süresi geçmiş. Başka etkinliklere bir göz atsan?',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontFamily: 'Manrope',
+        fontWeight: FontWeight.w600,
+        fontSize: MediaQuery.of(context).size.height * 0.025,
+        color: Color(0xff252745).withOpacity(0.7),
+      ),
+    );
+  }
 
   Widget get _tamamBtn => InkWell(
         onTap: () {
@@ -376,9 +464,56 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                   TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w400),
             ),
           ],
-        )
+        ),
+        Expanded(
+            child: SizedBox(
+          height: 0,
+        )),
+        InkWell(
+            onTap: _begeniBtn,
+            child: _begenildiMi
+                ? Lottie.asset('assets/lottie/like.json',
+                    repeat: false,
+                    height: MediaQuery.of(context).size.height * 0.08)
+                : Padding(
+                    padding: const EdgeInsets.only(top: 12.0, right: 12),
+                    child: Icon(
+                      Icons.favorite_outline,
+                      size: MediaQuery.of(context).size.height * 0.05,
+                      color: Color(0xffEF2E5B),
+                    ),
+                  ))
       ],
     );
+  }
+
+  _begeniBtn() async {
+    if (_begenildiMi) {
+      try {
+        setState(() {
+          _begenildiMi = false;
+        });
+        FirestoreServisi().begeniKaldir(
+            aktifKullaniciId: widget.aktifKullaniciId,
+            etkinlikId: widget.etkinlikData!.id);
+      } catch (hata) {
+        print("hata: " + hata.toString());
+        print(hata.hashCode);
+      }
+    } else {
+      try {
+        setState(() {
+          _begenildiMi = true;
+        });
+        FirestoreServisi().begeniOlustur(
+            aktifKullaniciId: widget.aktifKullaniciId,
+            etkinlikId: widget.etkinlikData!.id);
+        FirestoreServisi().populerlikSayisiArtir(widget.etkinlikData!.id);
+      } catch (hata) {
+        print("hata: " + hata.toString());
+        print(hata.hashCode);
+      }
+    }
   }
 
   Widget _etkinlikFiyat() {
