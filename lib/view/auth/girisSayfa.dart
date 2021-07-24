@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
@@ -24,8 +25,15 @@ class _GirisSayfaState extends State<GirisSayfa> {
   String? email, sifre;
 
   @override
+  void initState() {
+    super.initState();
+    internetKontrol();
+  }
+
+  @override
   void dispose() {
     _yukleniyor = false;
+    internetKontrol();
     super.dispose();
   }
 
@@ -295,6 +303,8 @@ class _GirisSayfaState extends State<GirisSayfa> {
   void _girisYap() async {
     final _yetkilendirmeServisi =
         Provider.of<YetkilendirmeServisi>(context, listen: false);
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
     var _formState = _formAnahtari.currentState;
     if (_formState!.validate()) {
       _formState.save();
@@ -303,9 +313,58 @@ class _GirisSayfaState extends State<GirisSayfa> {
         _yukleniyor = true;
       });
 
+      if (connectivityResult != ConnectivityResult.none) {
+        try {
+          Kullanici? kullanici =
+              await _yetkilendirmeServisi.mailIleGiris(email!, sifre!);
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TabBarMain(
+                        aktifKullaniciId: kullanici!.id,
+                      )));
+        } catch (hata) {
+          print("hata");
+          print(hata.hashCode);
+          print(hata);
+          setState(() {
+            _yukleniyor = false;
+          });
+          uyariGoster(hataKodu: hata.hashCode);
+        }
+      } else {
+        setState(() {
+          _yukleniyor = false;
+        });
+        uyariGoster(hataKodu: 0);
+      }
+    }
+  }
+
+  void _googleIleGiris() async {
+    var _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
+    setState(() {
+      _yukleniyor = true;
+    });
+    print("connection: " + connectivityResult.toString());
+    if (connectivityResult != ConnectivityResult.none) {
       try {
-        Kullanici? kullanici =
-            await _yetkilendirmeServisi.mailIleGiris(email!, sifre!);
+        Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
+        if (kullanici != null) {
+          Kullanici? firestoreKullanici =
+              await FirestoreServisi().kullaniciGetir(kullanici.id);
+          if (firestoreKullanici == null) {
+            FirestoreServisi().kullaniciOlustur(
+                id: kullanici.id,
+                email: kullanici.email,
+                adSoyad: kullanici.adSoyad,
+                fotoUrl: kullanici.fotoUrl);
+          }
+        }
 
         Navigator.push(
             context,
@@ -314,52 +373,29 @@ class _GirisSayfaState extends State<GirisSayfa> {
                       aktifKullaniciId: kullanici!.id,
                     )));
       } catch (hata) {
-        setState(() {
-          _yukleniyor = false;
-        });
-        uyariGoster(hataKodu: hata.hashCode);
-        print(hata.toString());
+        print("hata");
         print(hata.hashCode);
+        print(hata);
+        if (mounted) {
+          setState(() {
+            _yukleniyor = false;
+          });
+        }
+        uyariGoster(hataKodu: hata.hashCode);
       }
+    } else {
+      setState(() {
+        _yukleniyor = false;
+      });
+      uyariGoster(hataKodu: 0);
     }
   }
 
-  void _googleIleGiris() async {
-    var _yetkilendirmeServisi =
-        Provider.of<YetkilendirmeServisi>(context, listen: false);
+  internetKontrol() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
 
-    setState(() {
-      _yukleniyor = true;
-    });
-    try {
-      Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
-      if (kullanici != null) {
-        Kullanici? firestoreKullanici =
-            await FirestoreServisi().kullaniciGetir(kullanici.id);
-        if (firestoreKullanici == null) {
-          FirestoreServisi().kullaniciOlustur(
-              id: kullanici.id,
-              email: kullanici.email,
-              adSoyad: kullanici.adSoyad,
-              fotoUrl: kullanici.fotoUrl);
-        }
-      }
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TabBarMain(
-                    aktifKullaniciId: kullanici!.id,
-                  )));
-    } catch (hata) {
-      if (mounted) {
-        setState(() {
-          _yukleniyor = false;
-        });
-      }
-      uyariGoster(hataKodu: hata.hashCode);
-      print(hata.toString());
-      print(hata.hashCode);
+    if (connectivityResult == ConnectivityResult.none) {
+      uyariGoster(hataKodu: 0);
     }
   }
 
@@ -374,6 +410,8 @@ class _GirisSayfaState extends State<GirisSayfa> {
       hataMesaji = "Girilen şifre hatalı.";
     } else if (hataKodu == 446151799) {
       hataMesaji = "Kullanıcı engellenmiş.";
+    } else if (hataKodu == 0) {
+      hataMesaji = "İnternet bağlantınızı kontrol edin.";
     } else {
       hataMesaji = "Bir hata oluştu.";
     }

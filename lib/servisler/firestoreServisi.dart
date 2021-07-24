@@ -43,6 +43,43 @@ class FirestoreServisi {
         .update({"dogrulandiMi": dogrulandiMi});
   }
 
+  Future<List<Etkinlik>> etkinlikAra(String kelime) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("etkinlikler")
+        .where(
+          "baslik",
+          isGreaterThanOrEqualTo: kelime.toUpperCase(),
+          isLessThan: kelime.substring(0, kelime.length - 1) +
+              String.fromCharCode(kelime.codeUnitAt(kelime.length - 1) + 1),
+        )
+        .get();
+    print(snapshot);
+    List<Etkinlik> etkinlikler =
+        snapshot.docs.map((doc) => Etkinlik.dokumandanUret(doc)).toList();
+    print(etkinlikler.length);
+    return etkinlikler;
+
+    //TODO: günü geçmiş etkinliklet listeye eklenmesin
+  }
+
+  Future<List<Etkinlik>> kategoriyeGoreArama(String kategori) async {
+    QuerySnapshot snapshot = await _firestore.collection("etkinlikler").get();
+    List<Etkinlik> etkinlikler = [];
+
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
+      var now = new DateTime.now();
+
+      DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
+          .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
+
+      if (etkinlikZamani.isAfter(now) && etkinlik.kategori == kategori) {
+        etkinlikler.add(etkinlik);
+      }
+    });
+    return etkinlikler;
+  }
+
   Future<List<Etkinlik>> populerEtkinlikleriGetir(bool limit) async {
     QuerySnapshot _snapshot;
     if (limit == true) {
@@ -103,6 +140,8 @@ class FirestoreServisi {
           DateTime(thisMonday.year, thisMonday.month, thisMonday.day, 00, 00);
       thisSunday =
           DateTime(thisSunday.year, thisSunday.month, thisSunday.day, 23, 59);
+
+      //TODO: 19-25 temmuz arasındaki hafta 24 temmuz etkinlikleri gözükmedi
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
@@ -291,6 +330,15 @@ class FirestoreServisi {
     return false;
   }
 
+  void biletKaldir({String? etkinlikId, String? aktifKullaniciId}) async {
+    await _firestore
+        .collection("biletler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBiletleri")
+        .doc(etkinlikId)
+        .delete();
+  }
+
   Future<void> populerlikSayisiArtir(String? etkinlikId) async {
     DocumentReference docRef =
         _firestore.collection("etkinlikler").doc(etkinlikId);
@@ -310,5 +358,96 @@ class FirestoreServisi {
       Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
       return etkinlik;
     }
+  }
+
+  Future<void> sikayetOlustur(
+      {sikayetEdenId,
+      sikayetId,
+      sikayetEdeninAdiSoyadi,
+      sikayetEdeninMaili,
+      sikayetMetni,
+      sikayetEdeninTelefonu}) async {
+    await _firestore
+        .collection("sikayetler")
+        .doc(sikayetEdenId)
+        .collection("kullanicininSikayetleri")
+        .doc(sikayetId)
+        .set({
+      "sikayetEdenId": sikayetEdenId,
+      "sikayetEdeninAdiSoyadi": sikayetEdeninAdiSoyadi,
+      "sikayetEdeninMaili": sikayetEdeninMaili,
+      "sikayetMetni": sikayetMetni,
+      "sikayetEdeninTelefonu": sikayetEdeninTelefonu,
+      "olusturulmaZamani": zaman,
+    });
+  }
+
+  Future<void> duyuruOlustur(
+      {duyuruId,
+      kullaniciId,
+      etkinlikId,
+      sikayetId,
+      etkinlikFoto,
+      etkinlikAdi,
+      duyuruTipi,
+      olusturulmaZamani,
+      gorulduMu = "false"}) async {
+    await _firestore
+        .collection("duyurular")
+        .doc(kullaniciId)
+        .collection("kullanicininDuyurulari")
+        .doc(duyuruId)
+        .set({
+      "duyuruId": duyuruId,
+      "kullaniciId": kullaniciId,
+      "sikayetId": sikayetId,
+      "etkinlikId": etkinlikId,
+      "etkinlikAdi": etkinlikAdi,
+      "etkinlikFoto": etkinlikFoto,
+      "duyuruTipi": duyuruTipi,
+      "olusturulmaZamani": zaman,
+      "gorulduMu": gorulduMu,
+    });
+  }
+
+  Future<Etkinlik?> etkinlikZamanKontrol({String? aktifKullaniciId}) async {
+    QuerySnapshot snapshotBiletler = await _firestore
+        .collection("biletler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininBiletleri")
+        .orderBy("olusturulmaZamani", descending: false)
+        .get();
+
+    QuerySnapshot snapshotEtkinlikler =
+        await _firestore.collection("etkinlikler").get();
+
+    List<Etkinlik> etkinlikler = [];
+
+    snapshotBiletler.docs.forEach((DocumentSnapshot doc) {
+      Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
+      snapshotEtkinlikler.docs.forEach((DocumentSnapshot doc2) {
+        Etkinlik bilet = Etkinlik.dokumandanUret(doc2);
+        var now = DateTime.now();
+
+        DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
+            .parse(bilet.tarih.toString() + ' ' + bilet.saat.toString());
+
+        var yarimSaatOncesi = now.add(Duration(minutes: -30));
+
+        if (etkinlik.id == bilet.id
+            // && etkinlikZamani.isBefore(now) &&
+            //       etkinlikZamani.isBefore(yarimSaatOncesi)
+            ) {
+          duyuruOlustur(
+            duyuruTipi: "azKaldi",
+            etkinlikAdi: etkinlik.baslik,
+            etkinlikFoto: etkinlik.etkinlikResmiUrl,
+            etkinlikId: etkinlik.id,
+            kullaniciId: aktifKullaniciId,
+          );
+          print("eurekaaaaaa");
+        }
+      });
+    });
   }
 }

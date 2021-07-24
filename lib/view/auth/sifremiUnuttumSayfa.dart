@@ -1,4 +1,3 @@
-
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ class SifremiUnuttumSayfa extends StatefulWidget {
 
 class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
   final _formAnahtari = GlobalKey<FormState>();
-  final _scaffoldAnahtari = GlobalKey<ScaffoldState>();
 
   bool _yukleniyor = false;
   String? _email;
@@ -214,6 +212,9 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
               );
             });
       } catch (hata) {
+        print("hata");
+        print(hata.hashCode);
+        print(hata);
         setState(() {
           _yukleniyor = false;
         });

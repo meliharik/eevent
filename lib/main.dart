@@ -1,4 +1,5 @@
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/internetUyari.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:event_app/view/auth/onBoardingSayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
@@ -7,6 +8,7 @@ import 'package:event_app/view/pages/aramaSayfa.dart';
 import 'package:event_app/view/theme/theme_light.dart';
 import 'package:event_app/yonlendirme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
@@ -22,6 +24,7 @@ Future<void> main() async {
   initScreen = prefs.getInt("initScreen");
   await prefs.setInt("initScreen", 1);
   print('initScreen $initScreen');
+
   runApp(MyApp());
 }
 
@@ -51,6 +54,7 @@ class MyApp extends StatelessWidget {
             initScreen == 0 || initScreen == null ? "/" : "/yonlendirme",
         routes: {
           '/': (context) => OnBoardingSayfa(),
+          '/uyari': (context) => InternetUyariSayfa(),
           '/yonlendirme': (context) => Yonlendirme(),
           '/girisSayfa': (context) => GirisSayfa(),
           '/homeSayfa': (context) => AnaSayfa(),
@@ -60,4 +64,19 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
+
+  // Future<String?> sayfaYonlendirme() async {
+  //   var connectivityResult = await (Connectivity().checkConnectivity());
+
+  //   if (connectivityResult != ConnectionState.none ||
+  //       connectivityResult != ConnectionState.waiting) {
+  //     if (initScreen == 0 || initScreen == null) {
+  //       return "/";
+  //     } else {
+  //       return "/yonlendirme";
+  //     }
+  //   } else {
+  //     return "/uyari";
+  //   }
+  // }
 }

@@ -1,12 +1,12 @@
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
-import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:share/share.dart';
 
 class EtkinlikDetaySayfa extends StatefulWidget {
   final String? aktifKullaniciId;
@@ -23,6 +23,7 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
   bool _begenildiMi = false;
   bool _yukleniyor = false;
   bool _suresiGecmisMi = false;
+  bool interneteBagliMi = true;
 
   _sureKontrol() {
     var now = new DateTime.now();
@@ -80,7 +81,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                     automaticallyImplyLeading: false,
                     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                     leading: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
+                      padding: const EdgeInsets.only(
+                        left: 15.0,
+                      ),
                       child: Container(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -101,10 +104,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                     ),
                     actions: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
+                        padding: const EdgeInsets.only(right: 15.0),
                         child: Container(
-                          height: 100,
-                          width: 50,
+                          width: 40,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color:
@@ -113,19 +115,41 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                           child: PopupMenuButton(
                             itemBuilder: (context) => [
                               PopupMenuItem(
-                                child: Text("Paylaş"),
+                                child: Text(
+                                  "Paylaş",
+                                  style: TextStyle(
+                                      color: Color(0xff252745),
+                                      fontSize:
+                                          MediaQuery.of(context).size.height *
+                                              0.022,
+                                      fontFamily: 'Manrope',
+                                      fontWeight: FontWeight.w600),
+                                ),
                                 value: 1,
                               ),
                               PopupMenuItem(
-                                child: Text("Şikayet Et"),
+                                child: Text("Şikayet Et",
+                                    style: TextStyle(
+                                        color: Color(0xff252745),
+                                        fontSize:
+                                            MediaQuery.of(context).size.height *
+                                                0.022,
+                                        fontFamily: 'Manrope',
+                                        fontWeight: FontWeight.w600)),
                                 value: 2,
                               )
                             ],
                             onSelected: (int menu) {
                               if (menu == 1) {
-                                //TODO: paylaşma metni girilecek
+                                _paylas(context);
                               } else if (menu == 2) {
-                                //TODO: şikayet sayfasına gidecek
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SikayetEtSayfa(
+                                              aktifKullaniciId:
+                                                  widget.aktifKullaniciId,
+                                            )));
                               }
                             },
                             child: Icon(
@@ -140,14 +164,14 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                     ],
                     expandedHeight: 300.0,
                     elevation: 0,
-                    floating: true,
+                    floating: false,
                     snap: false,
                     pinned: true,
                     flexibleSpace: FlexibleSpaceBar(
                         centerTitle: true,
                         background: Image.network(
                           widget.etkinlikData!.etkinlikResmiUrl.toString(),
-                          //fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                         )),
                   ),
                 ];
@@ -159,6 +183,14 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                 ],
               )),
         ));
+  }
+
+  void _paylas(BuildContext context) {
+    //TODO: <APP_LINK> yerine uygulamanın store linki olacak
+    final String? text =
+        "${widget.etkinlikData!.baslik} isimli etkinlik baya öğretici ve zevkli gibi duruyor. Ne dersin, beraber girelim mi konuşmaya? Sen de evde boş boş oturacağıma kendimi geliştireyim diyorsan hadi uygulamayı yükle.\n<APP_LINK>";
+
+    Share.share(text.toString(), subject: 'Look what I made!');
   }
 
   Widget _yuklemeAnimasyonu() {
@@ -184,7 +216,7 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                 boslukHeight(context, 0.03),
                 _etkinlikZaman(),
                 boslukHeight(context, 0.02),
-                // TODO: tüm etkinlikler online olacağı için iptal edildi
+                //  tüm etkinlikler online olacağı için iptal edildi
                 //_etkinlikYer(),
                 //boslukHeight(context, 0.02),
                 _etkinlikFiyat(),
@@ -217,7 +249,7 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
               child: Text(butonText(),
                   style: TextStyle(
                       color: Theme.of(context).scaffoldBackgroundColor,
-                      fontSize: MediaQuery.of(context).size.height * 0.035,
+                      fontSize: MediaQuery.of(context).size.height * 0.03,
                       fontFamily: 'Manrope',
                       fontWeight: FontWeight.w600))),
         ),
@@ -279,15 +311,19 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                 );
               });
         } catch (hata) {
+          print("hata");
+          print(hata.hashCode);
+          print(hata);
           setState(() {
             _yukleniyor = false;
           });
-          print("hata: " + hata.toString() + hata.hashCode.toString());
           var snackBar = SnackBar(content: Text('Bir hata oluştu'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {
-        var snackBar = SnackBar(content: Text('Bu bilete zaten sahipsiniz.'));
+        var snackBar = SnackBar(
+            content: Text(
+                'Biletlerim sekmesinden biletinizi görüntüleyebilirsiniz.'));
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -301,6 +337,15 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
           builder: (context) {
             return Column(
               children: [
+                boslukHeight(context, 0.01),
+                Container(
+                  height: 8,
+                  width: MediaQuery.of(context).size.width * 0.4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
                 Lottie.asset('assets/lottie/time.json',
                     height: MediaQuery.of(context).size.height * 0.25),
                 _bottomSheetBasarili(false),
@@ -320,7 +365,7 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
       style: TextStyle(
         fontFamily: 'Manrope',
         fontWeight: FontWeight.w800,
-        fontSize: MediaQuery.of(context).size.height * 0.04,
+        fontSize: MediaQuery.of(context).size.height * 0.035,
         color: Color(0xff252745),
       ),
     );
@@ -474,12 +519,12 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             child: _begenildiMi
                 ? Lottie.asset('assets/lottie/like.json',
                     repeat: false,
-                    height: MediaQuery.of(context).size.height * 0.08)
+                    height: MediaQuery.of(context).size.height * 0.06)
                 : Padding(
-                    padding: const EdgeInsets.only(top: 12.0, right: 12),
+                    padding: const EdgeInsets.only(top: 12.0, right: 15),
                     child: Icon(
                       Icons.favorite_outline,
-                      size: MediaQuery.of(context).size.height * 0.05,
+                      size: MediaQuery.of(context).size.height * 0.03,
                       color: Color(0xffEF2E5B),
                     ),
                   ))
@@ -497,8 +542,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             aktifKullaniciId: widget.aktifKullaniciId,
             etkinlikId: widget.etkinlikData!.id);
       } catch (hata) {
-        print("hata: " + hata.toString());
+        print("hata");
         print(hata.hashCode);
+        print(hata);
       }
     } else {
       try {
@@ -510,8 +556,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             etkinlikId: widget.etkinlikData!.id);
         FirestoreServisi().populerlikSayisiArtir(widget.etkinlikData!.id);
       } catch (hata) {
-        print("hata: " + hata.toString());
+        print("hata");
         print(hata.hashCode);
+        print(hata);
       }
     }
   }

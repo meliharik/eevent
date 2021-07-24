@@ -309,12 +309,18 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
                   );
                 });
           } catch (error) {
+            print("hata");
+            print(error.hashCode);
+            print(error);
             setState(() {
               _yukleniyor = false;
             });
             uyariGoster(hataKodu: error.hashCode);
           }
         } catch (hata) {
+          print("hata");
+          print(hata.hashCode);
+          print(hata);
           setState(() {
             _yukleniyor = false;
           });

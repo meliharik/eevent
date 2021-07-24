@@ -78,7 +78,7 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             'Biletlerim',
             style: TextStyle(
                 color: Color(0xff252745),
-                fontSize: 25,
+                fontSize: MediaQuery.of(context).size.height * 0.03,
                 fontFamily: 'Manrope',
                 fontWeight: FontWeight.w800),
           ),
@@ -135,6 +135,43 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
     );
   }
 
+  Widget get _gecmisTab => FutureBuilder<List<Etkinlik>>(
+        future: FirestoreServisi()
+            .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data!.length == 0) {
+            return Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset('assets/lottie/empty.json',
+                    height: MediaQuery.of(context).size.height * 0.15),
+                boslukHeight(context, 0.05),
+                Text(
+                  "Hiç geçmiş biletin yok :(",
+                  style: TextStyle(
+                      color: Color(0xff252745),
+                      fontSize: MediaQuery.of(context).size.height * 0.022,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600),
+                )
+              ],
+            ));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Etkinlik etkinlik = snapshot.data![index];
+              return buildBilet(etkinlik, true, false);
+            },
+          );
+        },
+      );
+
   Widget get _yaklasanlarTab => FutureBuilder<List<Etkinlik>>(
         future: FirestoreServisi()
             .yaklasanBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
@@ -145,6 +182,8 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
           if (snapshot.data!.length == 0) {
             return Center(
                 child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Lottie.asset('assets/lottie/empty.json',
                     height: MediaQuery.of(context).size.height * 0.15),
@@ -164,7 +203,44 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
               Etkinlik etkinlik = snapshot.data![index];
-              return buildBilet(etkinlik, false);
+              return buildBilet(etkinlik, false, true);
+            },
+          );
+        },
+      );
+
+  Widget get _begenilerTab => FutureBuilder<List<Etkinlik>>(
+        future: FirestoreServisi().begenilenEtkinlikleriGetir(
+            aktifKullaniciId: widget.profilSahibiId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.data!.length == 0) {
+            return Center(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Lottie.asset('assets/lottie/empty.json',
+                    height: MediaQuery.of(context).size.height * 0.15),
+                boslukHeight(context, 0.05),
+                Text(
+                  "Hiç beğendiğin etkinlik yok :(",
+                  style: TextStyle(
+                      color: Color(0xff252745),
+                      fontSize: MediaQuery.of(context).size.height * 0.022,
+                      fontFamily: 'Manrope',
+                      fontWeight: FontWeight.w600),
+                )
+              ],
+            ));
+          }
+          return ListView.builder(
+            itemCount: snapshot.data!.length,
+            itemBuilder: (context, index) {
+              Etkinlik etkinlik = snapshot.data![index];
+              return buildBilet(etkinlik, false, false);
             },
           );
         },
@@ -223,16 +299,24 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
         yil.toString();
   }
 
-  buildBilet(Etkinlik etkinlik, bool gecmisSecildi) {
+  buildBilet(Etkinlik etkinlik, bool gecmisSecildi, bool yaklasanlarSecildi) {
     return InkWell(
       onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => EtkinlikDetaySayfa(
-                      aktifKullaniciId: widget.profilSahibiId,
-                      etkinlikData: etkinlik,
-                    )));
+        yaklasanlarSecildi
+            ? Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => BiletDetaySayfa(
+                          aktifKullaniciId: widget.profilSahibiId,
+                          etkinlikData: etkinlik,
+                        )))
+            : Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => EtkinlikDetaySayfa(
+                          aktifKullaniciId: widget.profilSahibiId,
+                          etkinlikData: etkinlik,
+                        )));
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
@@ -341,78 +425,4 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
       ),
     );
   }
-
-  Widget get _gecmisTab => FutureBuilder<List<Etkinlik>>(
-        future: FirestoreServisi()
-            .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.data!.length == 0) {
-            return Center(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset('assets/lottie/empty.json',
-                    height: MediaQuery.of(context).size.height * 0.15),
-                boslukHeight(context, 0.05),
-                Text(
-                  "Hiç geçmiş biletin yok :(",
-                  style: TextStyle(
-                      color: Color(0xff252745),
-                      fontSize: MediaQuery.of(context).size.height * 0.022,
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w600),
-                )
-              ],
-            ));
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              Etkinlik etkinlik = snapshot.data![index];
-              return buildBilet(etkinlik, true);
-            },
-          );
-        },
-      );
-
-  Widget get _begenilerTab => FutureBuilder<List<Etkinlik>>(
-        future: FirestoreServisi().begenilenEtkinlikleriGetir(
-            aktifKullaniciId: widget.profilSahibiId),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.data!.length == 0) {
-            return Center(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Lottie.asset('assets/lottie/empty.json',
-                    height: MediaQuery.of(context).size.height * 0.15),
-                boslukHeight(context, 0.05),
-                Text(
-                  "Hiç beğendiğin etkinlik yok :(",
-                  style: TextStyle(
-                      color: Color(0xff252745),
-                      fontSize: MediaQuery.of(context).size.height * 0.022,
-                      fontFamily: 'Manrope',
-                      fontWeight: FontWeight.w600),
-                )
-              ],
-            ));
-          }
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              Etkinlik etkinlik = snapshot.data![index];
-              return buildBilet(etkinlik, false);
-            },
-          );
-        },
-      );
 }

@@ -2,7 +2,6 @@ import 'package:event_app/view/viewModel/onBoardingModel.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 
 class OnBoardingSayfa extends StatefulWidget {
   const OnBoardingSayfa({Key? key}) : super(key: key);
@@ -149,7 +148,7 @@ class _OnBoardingSayfaState extends State<OnBoardingSayfa> {
                   colors: [Theme.of(context).primaryColor, Color(0xff6aa9c2)])),
           child: Center(
               child: Text(
-            currentIndex == contents.length - 1 ? "Continue" : "Next",
+            currentIndex == contents.length - 1 ? "Geç" : "Sıradaki",
             style: TextStyle(
                 fontFamily: 'Manrope',
                 fontWeight: FontWeight.w600,

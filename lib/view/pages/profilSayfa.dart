@@ -1,9 +1,9 @@
-import 'dart:math';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/auth/sifremiDegistir.dart';
 import 'package:event_app/view/pages/profiliDuzenleSayfa.dart';
+import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -26,6 +26,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
   @override
   void initState() {
     super.initState();
+    FirebaseAuth.instance.currentUser!.reload();
     if (user!.emailVerified) {
       FirestoreServisi().dogrulamaGuncelle(
           kullaniciId: widget.profilSahibiId, dogrulandiMi: "true");
@@ -43,7 +44,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
           'Profil',
           style: TextStyle(
               color: Color(0xff252745),
-              fontSize: 20,
+              fontSize: MediaQuery.of(context).size.height * 0.027,
               fontFamily: 'Manrope',
               fontWeight: FontWeight.w800),
         ),
@@ -71,13 +72,16 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
                 _customDivider,
                 _sifremiDegistirListTile(_profilSahibi!),
                 _customDivider,
-                _yardimListTile,
-                _customDivider,
+                //_yardimListTile,
+                //_customDivider,
                 _sikayetListTile,
+                _customDivider,
+                _puanlaListTile,
                 _customDivider,
                 _cikisYap(),
                 boslukHeight(context, 0.1),
                 _versiyonColumn,
+                boslukHeight(context, 0.1),
               ],
             ),
           );
@@ -349,8 +353,12 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
 
   Widget get _sikayetListTile => InkWell(
         onTap: () {
-          //TODO: şikayet et sayfasına gidecek
-          print("şikayet sayfasına gidecek");
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => SikayetEtSayfa(
+                        aktifKullaniciId: widget.profilSahibiId,
+                      )));
         },
         child: ListTile(
           minVerticalPadding: 0,
@@ -361,6 +369,32 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
           ),
           title: Text(
             'Şikayet',
+            style: TextStyle(
+                color: Color(0xff252745),
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w600),
+          ),
+          trailing: Icon(
+            FontAwesomeIcons.angleRight,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      );
+
+  Widget get _puanlaListTile => InkWell(
+        onTap: () {
+          //TODO: Google Play puanlama sayfasına gidecek
+          print("Google Play puanlama sayfasına gidecek");
+        },
+        child: ListTile(
+          minVerticalPadding: 0,
+          horizontalTitleGap: 0,
+          leading: Icon(
+            FontAwesomeIcons.solidStar,
+            color: Theme.of(context).primaryColor,
+          ),
+          title: Text(
+            'Puanla',
             style: TextStyle(
                 color: Color(0xff252745),
                 fontFamily: 'Manrope',
@@ -405,6 +439,8 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => GirisSayfa()));
     } catch (hata) {
+      print("hata");
+      print(hata.hashCode);
       print(hata);
       var snackBar = SnackBar(content: Text('Bir hata oluştu: $hata'));
       if (mounted) {

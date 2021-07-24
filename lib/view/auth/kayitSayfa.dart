@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
@@ -21,6 +22,7 @@ class _KayitSayfaState extends State<KayitSayfa> {
   final _scaffoldAnahtari = GlobalKey<ScaffoldState>();
   bool _yukleniyor = false;
   String? adSoyad, email, sifre;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,6 +34,18 @@ class _KayitSayfaState extends State<KayitSayfa> {
             _yuklemeAnimasyonu(),
           ],
         ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    internetKontrol();
+  }
+
+  @override
+  void dispose() {
+    _yukleniyor = false;
+    super.dispose();
   }
 
   Widget _yuklemeAnimasyonu() {
@@ -320,62 +334,6 @@ class _KayitSayfaState extends State<KayitSayfa> {
         ),
       );
 
-  Future<void> _hesapOlustur() async {
-    final _yetkilendirmeServisi =
-        Provider.of<YetkilendirmeServisi>(context, listen: false);
-
-    var _formState = _formAnahtari.currentState;
-
-    if (_formState!.validate()) {
-      _formState.save();
-      FocusScope.of(context).unfocus();
-      setState(() {
-        _yukleniyor = true;
-      });
-
-      try {
-        Kullanici? kullanici =
-            await _yetkilendirmeServisi.mailIleKayit(email!, sifre!);
-        if (kullanici != null) {
-          FirestoreServisi().kullaniciOlustur(
-              id: kullanici.id, email: email, adSoyad: adSoyad);
-        }
-
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => TabBarMain(
-                      aktifKullaniciId: kullanici!.id,
-                    )));
-        // Navigator.pop(context);
-      } catch (hata) {
-        setState(() {
-          _yukleniyor = false;
-        });
-
-        uyariGoster(hataKodu: hata.hashCode);
-        print(hata.hashCode);
-      }
-    }
-  }
-
-  uyariGoster({hataKodu}) {
-    String? hataMesaji;
-
-    if (hataKodu == 360587416) {
-      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
-    } else if (hataKodu == 34618382) {
-      hataMesaji = "Girdiğiniz mail kayıtlıdır.";
-    } else if (hataKodu == 265778269) {
-      hataMesaji = "Daha zor bir şifre tercih edin.";
-    } else {
-      hataMesaji = "Bir hata oluştu.";
-    }
-
-    var snackBar = SnackBar(content: Text('$hataMesaji'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
   Widget get _googleKayitBtn => InkWell(
         onTap: _googleIleGiris,
         child: Container(
@@ -403,42 +361,132 @@ class _KayitSayfaState extends State<KayitSayfa> {
             ])),
       );
 
+  Future<void> _hesapOlustur() async {
+    final _yetkilendirmeServisi =
+        Provider.of<YetkilendirmeServisi>(context, listen: false);
+
+    var _formState = _formAnahtari.currentState;
+
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
+    if (_formState!.validate()) {
+      _formState.save();
+      FocusScope.of(context).unfocus();
+      setState(() {
+        _yukleniyor = true;
+      });
+
+      if (connectivityResult != ConnectivityResult.none) {
+        try {
+          Kullanici? kullanici =
+              await _yetkilendirmeServisi.mailIleKayit(email!, sifre!);
+          if (kullanici != null) {
+            FirestoreServisi().kullaniciOlustur(
+                id: kullanici.id, email: email, adSoyad: adSoyad);
+          }
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TabBarMain(
+                        aktifKullaniciId: kullanici!.id,
+                      )));
+          // Navigator.pop(context);
+        } catch (hata) {
+          print("hata");
+          print(hata.hashCode);
+          print(hata);
+          setState(() {
+            _yukleniyor = false;
+          });
+
+          uyariGoster(hataKodu: hata.hashCode);
+        }
+      } else {
+        setState(() {
+          _yukleniyor = false;
+          uyariGoster(hataKodu: 0);
+        });
+      }
+    }
+  }
+
+  internetKontrol() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+
+    if (connectivityResult == ConnectivityResult.none) {
+      uyariGoster(hataKodu: 0);
+    }
+  }
+
+  uyariGoster({hataKodu}) {
+    String? hataMesaji;
+
+    if (hataKodu == 505284406) {
+      hataMesaji = "Böyle bir kullanıcı bulunmuyor.";
+    } else if (hataKodu == 360587416) {
+      hataMesaji = "Girdiğiniz mail adresi geçersizdir.";
+    } else if (hataKodu == 185768934) {
+      hataMesaji = "Girilen şifre hatalı.";
+    } else if (hataKodu == 446151799) {
+      hataMesaji = "Kullanıcı engellenmiş.";
+    } else if (hataKodu == 0) {
+      hataMesaji = "İnternet bağlantınızı kontrol edin.";
+    } else if (hataKodu == 34618382) {
+      hataMesaji = "Bu mail adresine kayıtlı bir kullanıcı bulunuyor.";
+    } else {
+      hataMesaji = "Bir hata oluştu.";
+    }
+
+    var snackBar = SnackBar(content: Text('$hataMesaji'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
   void _googleIleGiris() async {
     var _yetkilendirmeServisi =
         Provider.of<YetkilendirmeServisi>(context, listen: false);
+    var connectivityResult = await (Connectivity().checkConnectivity());
 
     setState(() {
       _yukleniyor = true;
     });
-    try {
-      Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
-      if (kullanici != null) {
-        Kullanici? firestoreKullanici =
-            await FirestoreServisi().kullaniciGetir(kullanici.id);
-        if (firestoreKullanici == null) {
-          FirestoreServisi().kullaniciOlustur(
-              id: kullanici.id,
-              email: kullanici.email,
-              adSoyad: kullanici.adSoyad,
-              fotoUrl: kullanici.fotoUrl);
+    if (connectivityResult != ConnectivityResult.none) {
+      try {
+        Kullanici? kullanici = await _yetkilendirmeServisi.googleIleGiris();
+        if (kullanici != null) {
+          Kullanici? firestoreKullanici =
+              await FirestoreServisi().kullaniciGetir(kullanici.id);
+          if (firestoreKullanici == null) {
+            FirestoreServisi().kullaniciOlustur(
+                id: kullanici.id,
+                email: kullanici.email,
+                adSoyad: kullanici.adSoyad,
+                fotoUrl: kullanici.fotoUrl);
+          }
         }
-      }
 
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TabBarMain(
-                    aktifKullaniciId: kullanici!.id,
-                  )));
-    } catch (hata) {
-      if (mounted) {
-        setState(() {
-          _yukleniyor = false;
-        });
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TabBarMain(
+                      aktifKullaniciId: kullanici!.id,
+                    )));
+      } catch (hata) {
+        print("hata");
+        print(hata.hashCode);
+        print(hata);
+        if (mounted) {
+          setState(() {
+            _yukleniyor = false;
+          });
+        }
+        uyariGoster(hataKodu: hata.hashCode);
       }
-      uyariGoster(hataKodu: hata.hashCode);
-      print(hata.toString());
-      print(hata.hashCode);
+    } else {
+      setState(() {
+        _yukleniyor = false;
+      });
+      uyariGoster(hataKodu: 0);
     }
   }
 

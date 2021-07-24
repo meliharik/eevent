@@ -1,3 +1,4 @@
+import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/pages/anaSayfa.dart';
 import 'package:event_app/view/pages/aramaSayfa.dart';
 import 'package:event_app/view/pages/biletlerimSayfa.dart';
@@ -15,15 +16,10 @@ class TabBarMain extends StatefulWidget {
 
 class _TabBarMainState extends State<TabBarMain> {
   int _currentIndex = 0;
-  // final _controller = PageController();
 
-  // void _onChange(int index) {
-  //   setState(() {
-  //     _currentIndex = index;
-  //   });
-  //   _controller.animateToPage(_currentIndex,
-  //       duration: Duration(milliseconds: 400), curve: Curves.decelerate);
-  // }
+  
+
+  // duyuruKontrol() {}
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +41,9 @@ class _TabBarMainState extends State<TabBarMain> {
         AnaSayfa(
           aktifKullaniciId: widget.aktifKullaniciId,
         ),
-        AramaSayfa(),
+        AramaSayfa(
+          aktifKullaniciId: widget.aktifKullaniciId,
+        ),
         BiletlerimSayfa(profilSahibiId: widget.aktifKullaniciId),
         ProfilSayfa(
           profilSahibiId: widget.aktifKullaniciId,
@@ -82,27 +80,36 @@ class _TabBarMainState extends State<TabBarMain> {
                   : Color(0xffe0dffa),
             )),
           ),
-          Tab(
-              icon: FaIcon(
-            FontAwesomeIcons.search,
-            color: _currentIndex == 1
-                ? Theme.of(context).primaryColor
-                : Color(0xffe0dffa),
-          )),
-          Tab(
-              icon: FaIcon(
-            FontAwesomeIcons.tag,
-            color: _currentIndex == 2
-                ? Theme.of(context).primaryColor
-                : Color(0xffe0dffa),
-          )),
-          Tab(
-              icon: FaIcon(
-            FontAwesomeIcons.userAlt,
-            color: _currentIndex == 3
-                ? Theme.of(context).primaryColor
-                : Color(0xffe0dffa),
-          )),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Tab(
+                icon: FaIcon(
+              FontAwesomeIcons.search,
+              color: _currentIndex == 1
+                  ? Theme.of(context).primaryColor
+                  : Color(0xffe0dffa),
+            )),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Tab(
+                icon: FaIcon(
+              FontAwesomeIcons.tag,
+              color: _currentIndex == 2
+                  ? Theme.of(context).primaryColor
+                  : Color(0xffe0dffa),
+            )),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Tab(
+                icon: FaIcon(
+              FontAwesomeIcons.userAlt,
+              color: _currentIndex == 3
+                  ? Theme.of(context).primaryColor
+                  : Color(0xffe0dffa),
+            )),
+          ),
         ],
       );
 }
