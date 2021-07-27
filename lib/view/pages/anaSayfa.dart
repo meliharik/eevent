@@ -1,11 +1,13 @@
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_app/model/duyuru.dart';
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/hepsiniGor/buHaftaHepsiniGorSayfa.dart';
 import 'package:event_app/view/hepsiniGor/bugunHepsiniGorSayfa.dart';
 import 'package:event_app/view/hepsiniGor/populerHepsiniGorSayfa.dart';
-import 'package:event_app/view/pages/duyurular.dart';
+import 'package:event_app/view/pages/duyurularSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
@@ -25,46 +27,48 @@ class _AnaSayfaState extends State<AnaSayfa>
   @override
   bool get wantKeepAlive => true;
 
-  List<Etkinlik> _etkinlikler = [];
+  bool duyurularGorulduMu = true;
 
   @override
   void initState() {
     super.initState();
-    populerEtkinlikleriGetir();
-    buHaftaEtkinlikleriGetir();
-    bugunEtkinlikleriGetir();
+
     FirestoreServisi()
-        .etkinlikZamanKontrol(aktifKullaniciId: widget.aktifKullaniciId);
+        .azKaldiDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
+    FirestoreServisi()
+        .sikayetDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
+    duyuruKontrol(kullaniciId: widget.aktifKullaniciId);
   }
 
-  Future<void> populerEtkinlikleriGetir() async {
-    List<Etkinlik> etkinlikler =
-        await FirestoreServisi().populerEtkinlikleriGetir(true);
-    if (mounted) {
-      setState(() {
-        _etkinlikler = etkinlikler;
-      });
-    }
+  @override
+  void dispose() {
+    duyuruKontrol(kullaniciId: widget.aktifKullaniciId);
+    super.dispose();
   }
 
-  Future<void> buHaftaEtkinlikleriGetir() async {
-    List<Etkinlik> etkinlikler =
-        await FirestoreServisi().buHaftaEtkinlikleriGetir(true);
-    if (mounted) {
-      setState(() {
-        _etkinlikler = etkinlikler;
-      });
-    }
-  }
+  duyuruKontrol({String? kullaniciId}) async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection("duyurular")
+        .doc(kullaniciId)
+        .collection("kullanicininDuyurulari")
+        .get();
 
-  Future<void> bugunEtkinlikleriGetir() async {
-    List<Etkinlik> etkinlikler =
-        await FirestoreServisi().bugunEtkinlikleriGetir(true);
-    if (mounted) {
-      setState(() {
-        _etkinlikler = etkinlikler;
-      });
-    }
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Duyuru duyuru = Duyuru.dokumandanUret(doc);
+      FirebaseFirestore.instance
+          .collection("duyurular")
+          .doc(kullaniciId)
+          .collection("kullanicininDuyurulari")
+          .doc(duyuru.id)
+          .get();
+      if (duyuru.gorulduMu == "false") {
+        if (mounted) {
+          setState(() {
+            duyurularGorulduMu = false;
+          });
+        }
+      }
+    });
   }
 
   String _randomTextler() {
@@ -93,10 +97,17 @@ class _AnaSayfaState extends State<AnaSayfa>
             actions: [
               IconButton(
                   onPressed: () {
+                    FirestoreServisi()
+                        .duyuruGuncelle(kullaniciId: widget.aktifKullaniciId);
+                    setState(() {
+                      duyurularGorulduMu = true;
+                    });
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DuyurularSayfa()));
+                            builder: (context) => DuyurularSayfa(
+                                  aktifKullaniciId: widget.aktifKullaniciId,
+                                )));
                   },
                   icon: Stack(
                     children: [
@@ -105,12 +116,13 @@ class _AnaSayfaState extends State<AnaSayfa>
                       Positioned(
                         right: 0,
                         top: 0,
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 100),
                           decoration: new BoxDecoration(
                             color: Color(0xffEF2E5B),
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          height: 10,
+                          height: duyurularGorulduMu ? 0 : 10,
                           width: 10,
                         ),
                       )
@@ -201,7 +213,7 @@ class _AnaSayfaState extends State<AnaSayfa>
         height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().populerEtkinlikleriGetir(true),
+          future: FirestoreServisi().populerEtkinlikleriGetir(false),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());

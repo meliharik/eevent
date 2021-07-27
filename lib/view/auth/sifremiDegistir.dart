@@ -360,14 +360,17 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
         ),
       );
 
-  Widget get _bottomSheetAciklama => Text(
-        'Şifren başarılı bir şekilde değiştirildi.',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w600,
-          fontSize: MediaQuery.of(context).size.height * 0.025,
-          color: Color(0xff252745).withOpacity(0.7),
+  Widget get _bottomSheetAciklama => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Text(
+          'Şifren başarılı bir şekilde değiştirildi.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w600,
+            fontSize: MediaQuery.of(context).size.height * 0.025,
+            color: Color(0xff252745).withOpacity(0.7),
+          ),
         ),
       );
 

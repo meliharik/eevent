@@ -8,15 +8,16 @@ class Sikayet {
   final String? sikayetEdeninMaili;
   final String? sikayetMetni;
   final String? sikayetEdeninTelefonu;
+  final String? sikayetCevabi;
 
-  Sikayet({
-    @required this.id,
-    this.sikayetEdenId,
-    this.sikayetEdeninAdiSoyadi,
-    this.sikayetEdeninMaili,
-    this.sikayetMetni,
-    this.sikayetEdeninTelefonu,
-  });
+  Sikayet(
+      {@required this.id,
+      this.sikayetEdenId,
+      this.sikayetEdeninAdiSoyadi,
+      this.sikayetEdeninMaili,
+      this.sikayetMetni,
+      this.sikayetEdeninTelefonu,
+      this.sikayetCevabi});
 
   factory Sikayet.dokumandanUret(DocumentSnapshot doc) {
     var docData = doc.data();
@@ -27,6 +28,7 @@ class Sikayet {
       sikayetEdeninMaili: docData['sikayetEdeninMaili'],
       sikayetMetni: docData['sikayetMetni'],
       sikayetEdeninTelefonu: docData['sikayetEdeninTelefonu'],
+      sikayetCevabi: docData['sikayetCevabi'],
     );
   }
 }

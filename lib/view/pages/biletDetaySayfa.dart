@@ -173,7 +173,7 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
     final String? text =
         "${widget.etkinlikData!.baslik} isimli etkinliğe bilet aldım. Sen de evde boş boş oturacağıma kendimi geliştireyim diyorsan hadi uygulamayı yükle.\n<APP_LINK>";
 
-    Share.share(text.toString(), subject: 'Look what I made!');
+    Share.share(text.toString(), subject: 'Uygulamayı indir!');
   }
 
   Widget get _sayfaElemanlari => Material(
@@ -466,7 +466,7 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
             ),
             boslukHeight(context, 0.006),
             Text(
-              '10:30 - 15:30',
+              widget.etkinlikData!.saat.toString(),
               style: TextStyle(
                   color: Color(0xff252745),
                   fontSize: MediaQuery.of(context).size.height * 0.02,
@@ -558,10 +558,16 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
       'U'
     ];
 
-    print(geciciBaslik);
-    String customUrl =
-        "${widget.etkinlikData!.baslik}%0A${widget.etkinlikData!.tarih}%0A${widget.etkinlikData!.saat}%0A${widget.etkinlikData!.meetingId}%0A${widget.etkinlikData!.meetingPass}%0A${widget.etkinlikData!.meetingLink}";
+    String customUrl;
 
+    if (widget.etkinlikData!.meetingLink!.isEmpty) {
+      String _customUrl = "${widget.etkinlikData!.baslik}";
+      customUrl = _customUrl;
+    } else {
+      String _customUrl =
+          "${widget.etkinlikData!.baslik}%0A${widget.etkinlikData!.tarih}%0A${widget.etkinlikData!.saat}%0A${widget.etkinlikData!.meetingId}%0A${widget.etkinlikData!.meetingPass}%0A${widget.etkinlikData!.meetingLink}";
+      customUrl = _customUrl;
+    }
     String url =
         'http://api.qrserver.com/v1/create-qr-code/?data=${customUrl}&size=100x100';
     return Center(

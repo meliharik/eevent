@@ -21,47 +21,6 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
   bool get wantKeepAlive => true;
 
   int currentIndex = 1;
-  List<Etkinlik> _yaklasanBiletler = [];
-  List<Etkinlik> _gecmisBiletler = [];
-  List<Etkinlik> _begenilenEtkinlikler = [];
-
-  Future<void> yaklasanBiletleriGetir() async {
-    List<Etkinlik> biletler = await FirestoreServisi()
-        .yaklasanBiletleriGetir(aktifKullaniciId: widget.profilSahibiId);
-    if (mounted) {
-      setState(() {
-        _yaklasanBiletler = biletler;
-      });
-    }
-  }
-
-  Future<void> gecmisBiletleriGetir() async {
-    List<Etkinlik> biletler = await FirestoreServisi()
-        .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId);
-    if (mounted) {
-      setState(() {
-        _gecmisBiletler = biletler;
-      });
-    }
-  }
-
-  Future<void> begenilenEtkinlikleriGetir() async {
-    List<Etkinlik> etkinlikler = await FirestoreServisi()
-        .begenilenEtkinlikleriGetir(aktifKullaniciId: widget.profilSahibiId);
-    if (mounted) {
-      setState(() {
-        _begenilenEtkinlikler = etkinlikler;
-      });
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    yaklasanBiletleriGetir();
-    gecmisBiletleriGetir();
-    begenilenEtkinlikleriGetir();
-  }
 
   @override
   Widget build(BuildContext context) {

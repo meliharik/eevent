@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:event_app/model/duyuru.dart';
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/model/kullanici.dart';
+import 'package:event_app/model/sikayet.dart';
 import 'package:intl/intl.dart';
 
 class FirestoreServisi {
@@ -53,13 +55,28 @@ class FirestoreServisi {
               String.fromCharCode(kelime.codeUnitAt(kelime.length - 1) + 1),
         )
         .get();
-    print(snapshot);
-    List<Etkinlik> etkinlikler =
-        snapshot.docs.map((doc) => Etkinlik.dokumandanUret(doc)).toList();
-    print(etkinlikler.length);
-    return etkinlikler;
 
-    //TODO: günü geçmiş etkinliklet listeye eklenmesin
+    List<Etkinlik> etkinlikler = [];
+
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
+
+      var now = new DateTime.now();
+
+      DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
+          .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
+
+      if (etkinlikZamani.hour == 00) {
+        etkinlikZamani = DateTime(
+            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      }
+
+      if (etkinlikZamani.isAfter(now)) {
+        etkinlikler.add(etkinlik);
+      }
+    });
+
+    return etkinlikler;
   }
 
   Future<List<Etkinlik>> kategoriyeGoreArama(String kategori) async {
@@ -72,6 +89,11 @@ class FirestoreServisi {
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
+
+      if (etkinlikZamani.hour == 00) {
+        etkinlikZamani = DateTime(
+            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      }
 
       if (etkinlikZamani.isAfter(now) && etkinlik.kategori == kategori) {
         etkinlikler.add(etkinlik);
@@ -103,6 +125,12 @@ class FirestoreServisi {
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
+
+      if (etkinlikZamani.hour == 00) {
+        etkinlikZamani = DateTime(
+            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      }
+
       if (etkinlikZamani.isAfter(now)) {
         etkinlikler.add(etkinlik);
       }
@@ -146,6 +174,17 @@ class FirestoreServisi {
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
+      if (etkinlikZamani.hour == 00) {
+        etkinlikZamani = DateTime(
+            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      }
+
+      // print(etkinlik.baslik);
+      // print(etkinlikZamani);
+      // print(thisMonday);
+      // print(thisSunday);
+      // print(now);
+
       if (thisMonday.isBefore(etkinlikZamani) &&
           thisSunday.isAfter(etkinlikZamani) &&
           etkinlikZamani.isAfter(now)) {
@@ -160,14 +199,13 @@ class FirestoreServisi {
     if (limit == true) {
       QuerySnapshot snapshot = await _firestore
           .collection("etkinlikler")
-          .orderBy("saat", descending: true)
-          .limit(7)
+          .orderBy("saat", descending: false)
           .get();
       _snapshot = snapshot;
     } else {
       QuerySnapshot snapshot = await _firestore
           .collection("etkinlikler")
-          .orderBy("saat", descending: true)
+          .orderBy("saat", descending: false)
           .get();
       _snapshot = snapshot;
     }
@@ -181,6 +219,11 @@ class FirestoreServisi {
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
+
+      if (etkinlikZamani.hour == 00) {
+        etkinlikZamani = DateTime(
+            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      }
 
       if (formattedDate == etkinlik.tarih && etkinlikZamani.isAfter(now)) {
         etkinlikler.add(etkinlik);
@@ -210,6 +253,12 @@ class FirestoreServisi {
 
         DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
             .parse(bilet.tarih.toString() + ' ' + bilet.saat.toString());
+
+        if (etkinlikZamani.hour == 00) {
+          etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+              etkinlikZamani.day, 12);
+        }
+
         if ((etkinlik.id == bilet.id)) {
           if (etkinlikZamani.isAfter(now)) {
             biletler.add(bilet);
@@ -241,6 +290,12 @@ class FirestoreServisi {
 
         DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
             .parse(bilet.tarih.toString() + ' ' + bilet.saat.toString());
+
+        if (etkinlikZamani.hour == 00) {
+          etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+              etkinlikZamani.day, 12);
+        }
+
         if ((etkinlik.id == bilet.id) && etkinlikZamani.isBefore(now)) {
           biletler.add(bilet);
         }
@@ -337,6 +392,13 @@ class FirestoreServisi {
         .collection("kullanicininBiletleri")
         .doc(etkinlikId)
         .delete();
+
+    await _firestore
+        .collection("duyurular")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininDuyurulari")
+        .doc(etkinlikId)
+        .delete();
   }
 
   Future<void> populerlikSayisiArtir(String? etkinlikId) async {
@@ -366,6 +428,7 @@ class FirestoreServisi {
       sikayetEdeninAdiSoyadi,
       sikayetEdeninMaili,
       sikayetMetni,
+      sikayetCevabi,
       sikayetEdeninTelefonu}) async {
     await _firestore
         .collection("sikayetler")
@@ -378,8 +441,23 @@ class FirestoreServisi {
       "sikayetEdeninMaili": sikayetEdeninMaili,
       "sikayetMetni": sikayetMetni,
       "sikayetEdeninTelefonu": sikayetEdeninTelefonu,
+      "sikayetCevabi": sikayetCevabi,
       "olusturulmaZamani": zaman,
     });
+  }
+
+  Future<Sikayet?> sikayetGetir(
+      {String? aktifKullaniciId, String? sikayetId}) async {
+    DocumentSnapshot doc = await _firestore
+        .collection("sikayetler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininSikayetleri")
+        .doc(sikayetId)
+        .get();
+    if (doc.exists) {
+      Sikayet sikayet = Sikayet.dokumandanUret(doc);
+      return sikayet;
+    }
   }
 
   Future<void> duyuruOlustur(
@@ -392,62 +470,153 @@ class FirestoreServisi {
       duyuruTipi,
       olusturulmaZamani,
       gorulduMu = "false"}) async {
-    await _firestore
-        .collection("duyurular")
-        .doc(kullaniciId)
-        .collection("kullanicininDuyurulari")
-        .doc(duyuruId)
-        .set({
-      "duyuruId": duyuruId,
-      "kullaniciId": kullaniciId,
-      "sikayetId": sikayetId,
-      "etkinlikId": etkinlikId,
-      "etkinlikAdi": etkinlikAdi,
-      "etkinlikFoto": etkinlikFoto,
-      "duyuruTipi": duyuruTipi,
-      "olusturulmaZamani": zaman,
-      "gorulduMu": gorulduMu,
-    });
+    if (duyuruTipi == "azKaldi") {
+      await _firestore
+          .collection("duyurular")
+          .doc(kullaniciId)
+          .collection("kullanicininDuyurulari")
+          .doc(etkinlikId)
+          .set({
+        "duyuruId": duyuruId,
+        "kullaniciId": kullaniciId,
+        "etkinlikId": etkinlikId,
+        "etkinlikAdi": etkinlikAdi,
+        "etkinlikFoto": etkinlikFoto,
+        "duyuruTipi": "azKaldi",
+        "olusturulmaZamani": zaman,
+        "gorulduMu": gorulduMu,
+      });
+    } else if (duyuruTipi == "sikayet") {
+      await _firestore
+          .collection("duyurular")
+          .doc(kullaniciId)
+          .collection("kullanicininDuyurulari")
+          .doc(duyuruId)
+          .set({
+        "duyuruId": duyuruId,
+        "kullaniciId": kullaniciId,
+        "sikayetId": sikayetId,
+        "duyuruTipi": "sikayet",
+        "olusturulmaZamani": zaman,
+        "gorulduMu": gorulduMu,
+      });
+    }
   }
 
-  Future<Etkinlik?> etkinlikZamanKontrol({String? aktifKullaniciId}) async {
+  Future<Etkinlik?> azKaldiDuyuruOlustur({String? aktifKullaniciId}) async {
     QuerySnapshot snapshotBiletler = await _firestore
         .collection("biletler")
         .doc(aktifKullaniciId)
         .collection("kullanicininBiletleri")
-        .orderBy("olusturulmaZamani", descending: false)
         .get();
 
     QuerySnapshot snapshotEtkinlikler =
         await _firestore.collection("etkinlikler").get();
 
-    List<Etkinlik> etkinlikler = [];
-
     snapshotBiletler.docs.forEach((DocumentSnapshot doc) {
       Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
-      snapshotEtkinlikler.docs.forEach((DocumentSnapshot doc2) {
+      snapshotEtkinlikler.docs.forEach((DocumentSnapshot doc2) async {
         Etkinlik bilet = Etkinlik.dokumandanUret(doc2);
         var now = DateTime.now();
 
         DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
             .parse(bilet.tarih.toString() + ' ' + bilet.saat.toString());
 
-        var yarimSaatOncesi = now.add(Duration(minutes: -30));
+        if (etkinlikZamani.hour == 00) {
+          etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+              etkinlikZamani.day, 12);
+        }
 
-        if (etkinlik.id == bilet.id
-            // && etkinlikZamani.isBefore(now) &&
-            //       etkinlikZamani.isBefore(yarimSaatOncesi)
-            ) {
+        var yarimSaatSonrasi = now.add(Duration(minutes: 30));
+
+        var docRef = await _firestore
+            .collection("duyurular")
+            .doc(aktifKullaniciId)
+            .collection("kullanicininDuyurulari")
+            .doc(bilet.id)
+            .get();
+
+        if (etkinlik.id == bilet.id &&
+            etkinlikZamani.isAfter(now) &&
+            etkinlikZamani.isBefore(yarimSaatSonrasi) &&
+            !docRef.exists) {
           duyuruOlustur(
+            duyuruId: bilet.id,
             duyuruTipi: "azKaldi",
-            etkinlikAdi: etkinlik.baslik,
-            etkinlikFoto: etkinlik.etkinlikResmiUrl,
-            etkinlikId: etkinlik.id,
+            etkinlikAdi: bilet.baslik,
+            etkinlikFoto: bilet.etkinlikResmiUrl,
+            etkinlikId: bilet.id,
             kullaniciId: aktifKullaniciId,
           );
           print("eurekaaaaaa");
         }
       });
     });
+  }
+
+  void sikayetDuyuruOlustur({String? aktifKullaniciId}) async {
+    QuerySnapshot snapshotSikayetler = await _firestore
+        .collection("sikayetler")
+        .doc(aktifKullaniciId)
+        .collection("kullanicininSikayetleri")
+        .get();
+
+    snapshotSikayetler.docs.forEach((DocumentSnapshot doc) async {
+      Sikayet sikayet = Sikayet.dokumandanUret(doc);
+
+      var docRef = await _firestore
+          .collection("duyurular")
+          .doc(aktifKullaniciId)
+          .collection("kullanicininDuyurulari")
+          .doc(sikayet.id)
+          .get();
+
+      if (sikayet.sikayetCevabi!.isNotEmpty && !docRef.exists) {
+        duyuruOlustur(
+          duyuruId: sikayet.id,
+          duyuruTipi: "sikayet",
+          kullaniciId: aktifKullaniciId,
+          sikayetId: sikayet.id,
+          olusturulmaZamani: zaman,
+        );
+        print("eurekaaaaaa");
+      }
+    });
+  }
+
+  void duyuruGuncelle({String? kullaniciId}) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("duyurular")
+        .doc(kullaniciId)
+        .collection("kullanicininDuyurulari")
+        .get();
+
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Duyuru duyuru = Duyuru.dokumandanUret(doc);
+      _firestore
+          .collection("duyurular")
+          .doc(kullaniciId)
+          .collection("kullanicininDuyurulari")
+          .doc(duyuru.id)
+          .update({"gorulduMu": "true"});
+    });
+  }
+
+  Future<List<Duyuru>> duyurulariGetir({String? profilSahibiId}) async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("duyurular")
+        .doc(profilSahibiId)
+        .collection("kullanicininDuyurulari")
+        .orderBy("olusturulmaZamani", descending: true)
+        .get();
+
+    List<Duyuru> duyurular = [];
+
+    snapshot.docs.forEach((DocumentSnapshot doc) {
+      Duyuru duyuru = Duyuru.dokumandanUret(doc);
+      duyurular.add(duyuru);
+    });
+
+    return duyurular;
   }
 }

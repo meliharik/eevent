@@ -17,10 +17,6 @@ class TabBarMain extends StatefulWidget {
 class _TabBarMainState extends State<TabBarMain> {
   int _currentIndex = 0;
 
-  
-
-  // duyuruKontrol() {}
-
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(

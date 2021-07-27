@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class Duyuru {
   final String? id;
   final String? kullaniciId;
-  final String? etkinlkId;
+  final String? etkinlikId;
   final String? etkinlikFoto;
   final String? etkinlikAdi;
   final String? duyuruTipi;
@@ -15,7 +15,7 @@ class Duyuru {
   Duyuru({
     @required this.id,
     this.kullaniciId,
-    this.etkinlkId,
+    this.etkinlikId,
     this.etkinlikFoto,
     this.etkinlikAdi,
     this.duyuruTipi,
@@ -29,10 +29,11 @@ class Duyuru {
     return Duyuru(
       id: doc.id,
       kullaniciId: (docData as Map)['kullaniciId'],
-      etkinlkId: docData['etkinlkId'],
+      etkinlikId: docData['etkinlikId'],
       etkinlikFoto: docData['etkinlikFoto'],
       etkinlikAdi: docData['etkinlikAdi'],
       duyuruTipi: docData['duyuruTipi'],
+      gorulduMu: docData['gorulduMu'],
       olusturulmaZamani: docData['olusturulmaZamani'],
       sikayetId: docData['sikayetId'],
     );

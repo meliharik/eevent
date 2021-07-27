@@ -267,14 +267,17 @@ class _SikayetEtSayfaState extends State<SikayetEtSayfa> {
         ),
       );
 
-  Widget get _bottomSheetAciklama => Text(
-        'Görüşün bize ulaştı. Projemizi geliştirmede bize destek olduğun için çok teşekkür ederiz.',
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: 'Manrope',
-          fontWeight: FontWeight.w600,
-          fontSize: MediaQuery.of(context).size.height * 0.025,
-          color: Color(0xff252745).withOpacity(0.7),
+  Widget get _bottomSheetAciklama => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: Text(
+          'Görüşün bize ulaştı. Projemizi geliştirmede bize destek olduğun için çok teşekkür ederiz.',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            fontWeight: FontWeight.w600,
+            fontSize: MediaQuery.of(context).size.height * 0.025,
+            color: Color(0xff252745).withOpacity(0.7),
+          ),
         ),
       );
 

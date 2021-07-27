@@ -33,6 +33,11 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             ' ' +
             widget.etkinlikData!.saat.toString());
 
+    if (etkinlikZamani.hour == 00) {
+      etkinlikZamani = DateTime(
+          etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+    }
+
     if (etkinlikZamani.isBefore(now)) {
       setState(() {
         _suresiGecmisMi = true;
@@ -372,16 +377,19 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
   }
 
   Widget _bottomSheetAciklama(bool basariliMi) {
-    return Text(
-      basariliMi
-          ? 'Biletin hazır. Biletlerim sekmesinden kontrol edebilirsin ;)'
-          : 'Maalesef etkinliğin süresi geçmiş. Başka etkinliklere bir göz atsan?',
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        fontFamily: 'Manrope',
-        fontWeight: FontWeight.w600,
-        fontSize: MediaQuery.of(context).size.height * 0.025,
-        color: Color(0xff252745).withOpacity(0.7),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+      child: Text(
+        basariliMi
+            ? 'Biletin hazır. Biletlerim sekmesinden kontrol edebilirsin ;)'
+            : 'Maalesef etkinliğin süresi geçmiş. Başka etkinliklere bir göz atsan?',
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontFamily: 'Manrope',
+          fontWeight: FontWeight.w600,
+          fontSize: MediaQuery.of(context).size.height * 0.025,
+          color: Color(0xff252745).withOpacity(0.7),
+        ),
       ),
     );
   }

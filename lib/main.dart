@@ -8,15 +8,17 @@ import 'package:event_app/view/pages/aramaSayfa.dart';
 import 'package:event_app/view/theme/theme_light.dart';
 import 'package:event_app/yonlendirme.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 int? initScreen; //onboarding için
 
 Future<void> main() async {
+  timeago.setLocaleMessages('tr', timeago.TrMessages());
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();

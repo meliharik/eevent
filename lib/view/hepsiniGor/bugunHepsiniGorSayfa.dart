@@ -27,12 +27,12 @@ class _BugunHepsiniGorSayfaState extends State<BugunHepsiniGorSayfa> {
           'Bugünkü Etkinlikler',
           style: TextStyle(
               color: Color(0xff252745),
-              fontSize: 20,
+              fontSize: MediaQuery.of(context).size.height * 0.03,
               fontFamily: 'Manrope',
               fontWeight: FontWeight.w800),
         ),
         leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+          padding: const EdgeInsets.only(left: 15.0),
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
