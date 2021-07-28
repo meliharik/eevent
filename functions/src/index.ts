@@ -5,7 +5,7 @@ admin.initializeApp();
 const db = admin.firestore();
 
 export const sendNotifications = functions.firestore.document("").onCreate(async(snapshot,context)=>{
-    const {message,senderId} = snapshot.data(); 
+    // const {message,senderId} = snapshot.data(); 
 });
 
 // // Start writing Firebase Functions
