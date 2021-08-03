@@ -1,3 +1,4 @@
+import 'package:event_app/servisler/notificationService.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/internetUyari.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
@@ -22,6 +23,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
+  NotificationService().initNotification();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   initScreen = prefs.getInt("initScreen");
   await prefs.setInt("initScreen", 1);
@@ -31,11 +33,14 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey(debugLabel: "Main Navigator");
   @override
   Widget build(BuildContext context) {
     return Provider<YetkilendirmeServisi>(
       create: (_) => YetkilendirmeServisi(),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         builder: (context, widget) => ResponsiveWrapper.builder(
             BouncingScrollWrapper.builder(context, widget!),
             maxWidth: 1200,

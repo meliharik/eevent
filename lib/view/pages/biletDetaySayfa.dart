@@ -1,5 +1,6 @@
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/servisler/notificationService.dart';
 import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/tabbar_view.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
@@ -277,6 +278,8 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
       FirestoreServisi().biletKaldir(
           aktifKullaniciId: widget.aktifKullaniciId,
           etkinlikId: widget.etkinlikData!.id);
+      NotificationService()
+          .cancelNotification(widget.etkinlikData!.id.hashCode);
       Navigator.push(
           context,
           MaterialPageRoute(

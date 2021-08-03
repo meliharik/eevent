@@ -458,7 +458,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
               fontWeight: FontWeight.w600),
         ),
         Text(
-          'Versiyon 2.8.6',
+          'Versiyon 1.0.0',
           style: TextStyle(
               color: Color(0xff252745),
               fontFamily: 'Manrope',

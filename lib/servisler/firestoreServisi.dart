@@ -102,24 +102,14 @@ class FirestoreServisi {
     return etkinlikler;
   }
 
-  Future<List<Etkinlik>> populerEtkinlikleriGetir(bool limit) async {
-    QuerySnapshot _snapshot;
-    if (limit == true) {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("populerlikSayisi", descending: true)
-          .limit(7)
-          .get();
-      _snapshot = snapshot;
-    } else {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("populerlikSayisi", descending: true)
-          .get();
-      _snapshot = snapshot;
-    }
+  Future<List<Etkinlik>> populerEtkinlikleriGetir() async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("etkinlikler")
+        .orderBy("populerlikSayisi", descending: true)
+        .get();
+
     List<Etkinlik> etkinlikler = [];
-    _snapshot.docs.forEach((DocumentSnapshot doc) {
+    snapshot.docs.forEach((DocumentSnapshot doc) {
       Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
       var now = new DateTime.now();
 
@@ -138,24 +128,14 @@ class FirestoreServisi {
     return etkinlikler;
   }
 
-  Future<List<Etkinlik>> buHaftaEtkinlikleriGetir(bool limit) async {
-    QuerySnapshot _snapshot;
-    if (limit = true) {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("tarih", descending: false)
-          .limit(7)
-          .get();
-      _snapshot = snapshot;
-    } else {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("tarih", descending: false)
-          .get();
-      _snapshot = snapshot;
-    }
+  Future<List<Etkinlik>> buHaftaEtkinlikleriGetir() async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("etkinlikler")
+        .orderBy("tarih", descending: false)
+        .get();
+
     List<Etkinlik> etkinlikler = [];
-    _snapshot.docs.forEach((DocumentSnapshot doc) {
+    snapshot.docs.forEach((DocumentSnapshot doc) {
       Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
       var now = new DateTime.now();
       int today = now.weekday;
@@ -194,23 +174,14 @@ class FirestoreServisi {
     return etkinlikler;
   }
 
-  Future<List<Etkinlik>> bugunEtkinlikleriGetir(bool limit) async {
-    QuerySnapshot _snapshot;
-    if (limit == true) {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("saat", descending: false)
-          .get();
-      _snapshot = snapshot;
-    } else {
-      QuerySnapshot snapshot = await _firestore
-          .collection("etkinlikler")
-          .orderBy("saat", descending: false)
-          .get();
-      _snapshot = snapshot;
-    }
+  Future<List<Etkinlik>> bugunEtkinlikleriGetir() async {
+    QuerySnapshot snapshot = await _firestore
+        .collection("etkinlikler")
+        .orderBy("saat", descending: false)
+        .get();
+
     List<Etkinlik> etkinlikler = [];
-    _snapshot.docs.forEach((DocumentSnapshot doc) {
+    snapshot.docs.forEach((DocumentSnapshot doc) {
       Etkinlik etkinlik = Etkinlik.dokumandanUret(doc);
 
       var now = new DateTime.now();
@@ -428,7 +399,7 @@ class FirestoreServisi {
       sikayetEdeninAdiSoyadi,
       sikayetEdeninMaili,
       sikayetMetni,
-      sikayetCevabi,
+      sikayetCevabi = "",
       sikayetEdeninTelefonu}) async {
     await _firestore
         .collection("sikayetler")

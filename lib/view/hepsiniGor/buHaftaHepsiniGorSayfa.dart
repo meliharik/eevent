@@ -63,7 +63,7 @@ class _BuHaftaHepsiniGorSayfaState extends State<BuHaftaHepsiniGorSayfa> {
 
   Widget get _etkinlikler => Expanded(
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().buHaftaEtkinlikleriGetir(false),
+          future: FirestoreServisi().buHaftaEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(

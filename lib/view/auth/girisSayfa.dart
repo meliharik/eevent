@@ -413,7 +413,7 @@ class _GirisSayfaState extends State<GirisSayfa> {
     } else if (hataKodu == 0) {
       hataMesaji = "İnternet bağlantınızı kontrol edin.";
     } else {
-      hataMesaji = "Bir hata oluştu.";
+      hataMesaji = "Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.";
     }
 
     // 474761051 The service is currently unavailable. This is a most likely a transient condition and may be corrected by retrying with a backoff.

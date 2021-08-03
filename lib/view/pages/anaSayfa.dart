@@ -10,7 +10,9 @@ import 'package:event_app/view/hepsiniGor/populerHepsiniGorSayfa.dart';
 import 'package:event_app/view/pages/duyurularSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AnaSayfa extends StatefulWidget {
@@ -28,10 +30,21 @@ class _AnaSayfaState extends State<AnaSayfa>
   bool get wantKeepAlive => true;
 
   bool duyurularGorulduMu = true;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration.zero, () {
+      this.firebaseCloudMessagingListeners(context);
+    });
+  }
+
+  void firebaseCloudMessagingListeners(BuildContext context) {
+    _firebaseMessaging.getToken().then((deviceToken) {
+      print("Firebase Device token: $deviceToken");
+    });
 
     FirestoreServisi()
         .azKaldiDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
@@ -213,7 +226,7 @@ class _AnaSayfaState extends State<AnaSayfa>
         height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().populerEtkinlikleriGetir(false),
+          future: FirestoreServisi().populerEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
@@ -225,7 +238,7 @@ class _AnaSayfaState extends State<AnaSayfa>
             return ListView.builder(
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.data!.length > 7 ? 7 : snapshot.data!.length,
               itemBuilder: (context, index) {
                 Etkinlik etkinlik = snapshot.data![index];
                 return buildCard(etkinlik);
@@ -239,7 +252,7 @@ class _AnaSayfaState extends State<AnaSayfa>
         height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().buHaftaEtkinlikleriGetir(true),
+          future: FirestoreServisi().buHaftaEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
@@ -251,7 +264,7 @@ class _AnaSayfaState extends State<AnaSayfa>
             return ListView.builder(
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.data!.length > 7 ? 7 : snapshot.data!.length,
               itemBuilder: (context, index) {
                 Etkinlik etkinlik = snapshot.data![index];
                 return buildCard(etkinlik);
@@ -265,7 +278,7 @@ class _AnaSayfaState extends State<AnaSayfa>
         height: MediaQuery.of(context).size.height * 0.3,
         //width: MediaQuery.of(context).size.width * 0.38,
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().bugunEtkinlikleriGetir(true),
+          future: FirestoreServisi().bugunEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(child: CircularProgressIndicator());
@@ -277,7 +290,7 @@ class _AnaSayfaState extends State<AnaSayfa>
             return ListView.builder(
               scrollDirection: Axis.horizontal,
               shrinkWrap: true,
-              itemCount: snapshot.data!.length,
+              itemCount: snapshot.data!.length > 7 ? 7 : snapshot.data!.length,
               itemBuilder: (context, index) {
                 Etkinlik etkinlik = snapshot.data![index];
                 return buildCard(etkinlik);

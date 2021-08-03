@@ -62,7 +62,7 @@ class _PopulerHepsiniGorSayfaState extends State<PopulerHepsiniGorSayfa> {
 
   Widget get _etkinlikler => Expanded(
         child: FutureBuilder<List<Etkinlik>>(
-          future: FirestoreServisi().populerEtkinlikleriGetir(false),
+          future: FirestoreServisi().populerEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(

@@ -5,7 +5,12 @@ class InternetUyariSayfa extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: Expanded(
+          child: Container(
+        child: Text('selam'),
+      )),
+    );
     //TODO: girişte internet kontrol edilecek
   }
 }

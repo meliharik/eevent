@@ -1,5 +1,6 @@
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/servisler/notificationService.dart';
 import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share/share.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart';
 
 class EtkinlikDetaySayfa extends StatefulWidget {
   final String? aktifKullaniciId;
@@ -66,6 +70,7 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
   @override
   void initState() {
     super.initState();
+    tz.initializeTimeZones();
     _biletKontrol();
     _begeniKontrol();
     _sureKontrol();
@@ -276,7 +281,54 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
     }
   }
 
-  biletAlma() async {
+  notificationIcinTarih() {
+    var simdi = DateTime.now();
+
+    var saatFull = widget.etkinlikData!.saat;
+    var saatParts = saatFull!.split(":");
+    var saatTemp = saatParts[0];
+    var dakikaTemp = saatParts[1];
+
+    int saat = int.parse(saatTemp);
+    int dakika = int.parse(dakikaTemp);
+
+    var tarihFull = widget.etkinlikData!.tarih;
+    var parts = tarihFull!.split('/');
+    var gunTemp = parts[0];
+    var ayTemp = parts[1];
+    var yilTemp = parts[2];
+
+    if (ayTemp[0] == 0) {
+      ayTemp = ayTemp[1];
+    }
+
+    int gun = int.parse(gunTemp);
+    int ay = int.parse(ayTemp);
+    int yil = int.parse(yilTemp);
+
+    int toplamSaniyeEtkinlik = ((30 * ay) + gun) * 24 * 3600;
+    int cikarilacakSaniyeEtkinlik = (24 - saat) * 3600;
+    int totalSaniyeEtkinlik =
+        toplamSaniyeEtkinlik - cikarilacakSaniyeEtkinlik + dakika * 60;
+    int yarimSaatOncesi = totalSaniyeEtkinlik - 30 * 60;
+
+    int toplamSaniyeNow = ((30 * simdi.month) + simdi.day) * 24 * 3600;
+    int cikarilacakSaniyeNow = (24 - simdi.hour) * 3600;
+    int totalSaniyeNow =
+        toplamSaniyeNow - cikarilacakSaniyeNow + simdi.minute * 60;
+
+    print("etkinlik: " + totalSaniyeEtkinlik.toString());
+    print("now: " + totalSaniyeNow.toString());
+    print(yarimSaatOncesi - totalSaniyeNow);
+    if ((yarimSaatOncesi - totalSaniyeNow) >= 0) {
+      return yarimSaatOncesi - totalSaniyeNow;
+    } else {
+      return 5;
+    }
+  }
+
+  Future biletAlma() async {
+    notificationIcinTarih();
     if (_suresiGecmisMi == false) {
       if (_biletVarMi == false) {
         setState(() {
@@ -291,6 +343,13 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             _yukleniyor = false;
             _biletVarMi = true;
           });
+          NotificationService().showNotification(
+
+              widget.etkinlikData!.id.hashCode,
+              "Çok az Kaldı!",
+              widget.etkinlikData!.baslik.toString() +
+                  ' başlıklı biletin yarım saat içinde başlayacak. Haydi koş!',
+              notificationIcinTarih());
 
           showModalBottomSheet(
               shape: RoundedRectangleBorder(
