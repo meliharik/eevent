@@ -1,3 +1,4 @@
+import 'package:event_app/model/connectivity_singleton.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/pages/anaSayfa.dart';
 import 'package:event_app/view/pages/aramaSayfa.dart';
@@ -16,6 +17,27 @@ class TabBarMain extends StatefulWidget {
 
 class _TabBarMainState extends State<TabBarMain> {
   int _currentIndex = 0;
+  // StreamSubscription? _connectionChangeStream;
+
+  // bool isOffline = false;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+
+  //   ConnectionStatusSingleton connectionStatus =
+  //       ConnectionStatusSingleton.getInstance();
+  //   connectionStatus.initialize();
+
+  //   _connectionChangeStream =
+  //       connectionStatus.connectionChange.listen(connectionChanged);
+  // }
+
+  // void connectionChanged(dynamic hasConnection) {
+  //   setState(() {
+  //     isOffline = !hasConnection;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

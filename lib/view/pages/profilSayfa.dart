@@ -1,5 +1,6 @@
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
+import 'package:event_app/servisler/notificationServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/auth/sifremiDegistir.dart';
 import 'package:event_app/view/pages/profiliDuzenleSayfa.dart';
@@ -436,6 +437,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
     try {
       await Provider.of<YetkilendirmeServisi>(context, listen: false)
           .cikisYap();
+      await NotificationService().cancelAllNotifications();
       Navigator.push(
           context, MaterialPageRoute(builder: (context) => GirisSayfa()));
     } catch (hata) {

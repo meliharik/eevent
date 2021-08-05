@@ -1,4 +1,5 @@
-import 'package:event_app/servisler/notificationService.dart';
+
+import 'package:event_app/servisler/notificationServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/internetUyari.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
@@ -20,6 +21,8 @@ int? initScreen; //onboarding için
 Future<void> main() async {
   timeago.setLocaleMessages('tr', timeago.TrMessages());
 
+  
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,14 +36,11 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final GlobalKey<NavigatorState> navigatorKey =
-      GlobalKey(debugLabel: "Main Navigator");
   @override
   Widget build(BuildContext context) {
     return Provider<YetkilendirmeServisi>(
       create: (_) => YetkilendirmeServisi(),
       child: MaterialApp(
-        navigatorKey: navigatorKey,
         builder: (context, widget) => ResponsiveWrapper.builder(
             BouncingScrollWrapper.builder(context, widget!),
             maxWidth: 1200,
@@ -71,19 +71,4 @@ class MyApp extends StatelessWidget {
       ),
     );
   }
-
-  // Future<String?> sayfaYonlendirme() async {
-  //   var connectivityResult = await (Connectivity().checkConnectivity());
-
-  //   if (connectivityResult != ConnectionState.none ||
-  //       connectivityResult != ConnectionState.waiting) {
-  //     if (initScreen == 0 || initScreen == null) {
-  //       return "/";
-  //     } else {
-  //       return "/yonlendirme";
-  //     }
-  //   } else {
-  //     return "/uyari";
-  //   }
-  // }
 }

@@ -124,7 +124,7 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
                       )));
         }
 
-        //TODO: süresi geçtiyse etkinlik detay sayfasına gidecek
+       
       }
     } else if (duyuru.duyuruTipi == 'sikayet') {
       Navigator.push(

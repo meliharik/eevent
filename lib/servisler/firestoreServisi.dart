@@ -148,8 +148,7 @@ class FirestoreServisi {
           DateTime(thisMonday.year, thisMonday.month, thisMonday.day, 00, 00);
       thisSunday =
           DateTime(thisSunday.year, thisSunday.month, thisSunday.day, 23, 59);
-
-      //TODO: 19-25 temmuz arasındaki hafta 24 temmuz etkinlikleri gözükmedi
+          
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());

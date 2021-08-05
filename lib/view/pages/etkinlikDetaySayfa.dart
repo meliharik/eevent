@@ -1,6 +1,6 @@
 import 'package:event_app/model/etkinlik.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
-import 'package:event_app/servisler/notificationService.dart';
+import 'package:event_app/servisler/notificationServisi.dart';
 import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
@@ -317,9 +317,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
     int totalSaniyeNow =
         toplamSaniyeNow - cikarilacakSaniyeNow + simdi.minute * 60;
 
-    print("etkinlik: " + totalSaniyeEtkinlik.toString());
-    print("now: " + totalSaniyeNow.toString());
-    print(yarimSaatOncesi - totalSaniyeNow);
+    // print("etkinlik: " + totalSaniyeEtkinlik.toString());
+    // print("now: " + totalSaniyeNow.toString());
+    // print(yarimSaatOncesi - totalSaniyeNow);
     if ((yarimSaatOncesi - totalSaniyeNow) >= 0) {
       return yarimSaatOncesi - totalSaniyeNow;
     } else {

@@ -111,3 +111,15 @@
 //     ));
 //   }
 // }
+
+// Future<void>? _initialization;
+
+//   Future<GoogleSignInAccount?> _callMethod(Function method) async {
+//     await _ensureInitialized();
+
+//     final dynamic response = await method();
+
+//     return _setCurrentUser(response != null && response is GoogleSignInUserData
+//         ? GoogleSignInAccount._(this, response)
+//         : null);
+//   }

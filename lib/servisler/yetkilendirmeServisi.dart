@@ -27,7 +27,16 @@ class YetkilendirmeServisi {
   }
 
   Future<Kullanici?> googleIleGiris() async {
-    GoogleSignInAccount? googleHesabi = await GoogleSignIn().signIn();
+    GoogleSignInAccount? googleHesabi;
+    try {
+      googleHesabi = await GoogleSignIn().signIn().catchError((hata) {
+        print("hata: $hata");
+      });
+    } catch (hata) {
+      print("hata");
+      print(hata.hashCode);
+      print(hata);
+    }
     GoogleSignInAuthentication googleYetkiKartim =
         await googleHesabi!.authentication;
     AuthCredential sifresizGirisBelgesi = GoogleAuthProvider.credential(

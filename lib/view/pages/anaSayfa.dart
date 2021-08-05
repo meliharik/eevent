@@ -7,6 +7,7 @@ import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/hepsiniGor/buHaftaHepsiniGorSayfa.dart';
 import 'package:event_app/view/hepsiniGor/bugunHepsiniGorSayfa.dart';
 import 'package:event_app/view/hepsiniGor/populerHepsiniGorSayfa.dart';
+import 'package:event_app/view/pages/biletDetaySayfa.dart';
 import 'package:event_app/view/pages/duyurularSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
@@ -46,10 +47,20 @@ class _AnaSayfaState extends State<AnaSayfa>
       print("Firebase Device token: $deviceToken");
     });
 
-    FirestoreServisi()
-        .azKaldiDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
-    FirestoreServisi()
-        .sikayetDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
+    try {
+      FirestoreServisi()
+          .azKaldiDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
+      FirestoreServisi()
+          .sikayetDuyuruOlustur(aktifKullaniciId: widget.aktifKullaniciId);
+    } on Exception catch (hata) {
+      print("hata");
+      print(hata.hashCode);
+      print(hata);
+      var snackBar = SnackBar(
+          content:
+              Text('Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
     duyuruKontrol(kullaniciId: widget.aktifKullaniciId);
   }
 

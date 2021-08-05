@@ -39,7 +39,7 @@ dependencies:
   firebase_auth:
   firebase_core:
   provider:
-  google_sign_in:
+  google_sign_in: 
   image_picker:
   uuid:
   firebase_storage:

@@ -2,9 +2,12 @@ import 'package:connectivity/connectivity.dart';
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
+import 'package:event_app/view/sozlesmeler/gizlilikPolitikasi.dart';
+import 'package:event_app/view/sozlesmeler/kullanimKosullari.dart';
 import 'package:event_app/view/viewModel/tabbar_view.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -72,6 +75,8 @@ class _KayitSayfaState extends State<KayitSayfa> {
           _emailTextField,
           boslukHeight(context, 0.03),
           _sifreTextField,
+          boslukHeight(context, 0.01),
+          _bilgilendirmeText,
           boslukHeight(context, 0.03),
           _hesapOlusturBtn,
           boslukHeight(context, 0.03),
@@ -83,6 +88,54 @@ class _KayitSayfaState extends State<KayitSayfa> {
       ),
     );
   }
+
+  Widget get _bilgilendirmeText => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+        child: RichText(
+          text: TextSpan(children: [
+            TextSpan(
+                text: 'Kaydolarak ',
+                style: TextStyle(
+                    color: Color(0xff252745),
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w400)),
+            TextSpan(
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => GizlilikPolitikasiSayfa())),
+                text: 'Gizlilik Politikası',
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w600)),
+            TextSpan(
+                text: ' ve ',
+                style: TextStyle(
+                    color: Color(0xff252745),
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w400)),
+            TextSpan(
+                recognizer: TapGestureRecognizer()
+                  ..onTap = () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => KullanimKosullariSayfa())),
+                text: 'Kullanım Koşullarını',
+                style: TextStyle(
+                    color: Theme.of(context).primaryColor,
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w600)),
+            TextSpan(
+                text: ' kabul etmiş sayılırsınız.',
+                style: TextStyle(
+                    color: Color(0xff252745),
+                    fontFamily: 'Manrope',
+                    fontWeight: FontWeight.w400)),
+          ]),
+        ),
+      );
 
   Widget get _welcomeText => Row(children: [
         boslukWidth(context, 0.04),
