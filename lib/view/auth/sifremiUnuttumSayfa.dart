@@ -22,7 +22,7 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
     return Scaffold(
       appBar: AppBar(
         leading: Padding(
-          padding: const EdgeInsets.only(left: 8.0),
+          padding: const EdgeInsets.only(left: 15.0),
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,

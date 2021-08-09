@@ -1,4 +1,3 @@
-
 import 'package:event_app/servisler/notificationServisi.dart';
 import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/internetUyari.dart';
@@ -11,6 +10,7 @@ import 'package:event_app/view/theme/theme_light.dart';
 import 'package:event_app/yonlendirme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -21,8 +21,6 @@ int? initScreen; //onboarding için
 Future<void> main() async {
   timeago.setLocaleMessages('tr', timeago.TrMessages());
 
-  
-
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +29,9 @@ Future<void> main() async {
   initScreen = prefs.getInt("initScreen");
   await prefs.setInt("initScreen", 1);
   print('initScreen $initScreen');
+
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   runApp(MyApp());
 }

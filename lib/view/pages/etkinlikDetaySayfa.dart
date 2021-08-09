@@ -344,9 +344,8 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             _biletVarMi = true;
           });
           NotificationService().showNotification(
-
               widget.etkinlikData!.id.hashCode,
-              "Çok az Kaldı!",
+              "Çok Az Kaldı!",
               widget.etkinlikData!.baslik.toString() +
                   ' başlıklı biletin yarım saat içinde başlayacak. Haydi koş!',
               notificationIcinTarih());

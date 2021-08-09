@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.event_app">
+    package="app.eevent.eevent">
    <application
-        android:label="event_app"
+        android:label="eevent"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:showWhenLocked="true"

@@ -30,14 +30,14 @@ class _SikayetEtSayfaState extends State<SikayetEtSayfa> {
             'Bize Yazın',
             style: TextStyle(
                 color: Color(0xff252745),
-                fontSize: 25,
+                fontSize: MediaQuery.of(context).size.height * 0.03,
                 fontFamily: 'Manrope',
                 fontWeight: FontWeight.w800),
           ),
           elevation: 0,
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           leading: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsets.only(left: 15.0),
             child: Container(
               decoration: BoxDecoration(
                 shape: BoxShape.circle,

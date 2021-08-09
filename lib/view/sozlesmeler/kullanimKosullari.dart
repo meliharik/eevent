@@ -66,7 +66,7 @@ class KullanimKosullariSayfa extends StatelessWidget {
               boslukWidth(context, 0.03),
               Expanded(
                 child: Text(
-                  '  - Sevgili ziyaretçimiz, lütfen eevent uygulamamıza kayıt olmadan önce işbu kullanım koşulları sözleşmesini dikkatlice okuyunuz. Siteye erişiminiz tamamen bu sözleşmeyi kabulünüze ve bu sözleşme ile belirlenen şartlara uymanıza bağlıdır. Şayet bu sözleşmede yazan herhangi bir koşulu kabul etmiyorsanız, lütfen uygulamaya erişiminizi sonlandırınız. Uygulamaya erişiminizi sürdürdüğünüz takdirde, koşulsuz ve kısıtlamasız olarak, işbu sözleşme metninin tamamını kabul ettiğinizin, tarafımızca varsayılacağını lütfen unutmayınız.\n  - Değişiklik yapma hakkı, tek taraflı olarak eevent\'e aittir ve eevent üzerinden güncel olarak paylaşılacak olan bu değişiklikleri, tüm kullanıcılarımız baştan kabul etmiş sayılır.',
+                  '  - Sevgili kullanıcımız, lütfen eevent uygulamamıza kayıt olmadan önce işbu kullanım koşulları sözleşmesini dikkatlice okuyunuz. Siteye erişiminiz tamamen bu sözleşmeyi kabulünüze ve bu sözleşme ile belirlenen şartlara uymanıza bağlıdır. Şayet bu sözleşmede yazan herhangi bir koşulu kabul etmiyorsanız, lütfen uygulamaya erişiminizi sonlandırınız. Uygulamaya erişiminizi sürdürdüğünüz takdirde, koşulsuz ve kısıtlamasız olarak, işbu sözleşme metninin tamamını kabul ettiğinizin, tarafımızca varsayılacağını lütfen unutmayınız.\n  - Değişiklik yapma hakkı, tek taraflı olarak eevent\'e aittir ve eevent üzerinden güncel olarak paylaşılacak olan bu değişiklikleri, tüm kullanıcılarımız baştan kabul etmiş sayılır.',
                   overflow: TextOverflow.clip,
                   style: TextStyle(
                     fontFamily: 'Manrope',
