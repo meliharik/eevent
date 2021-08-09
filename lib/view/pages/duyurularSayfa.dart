@@ -123,8 +123,6 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
                         etkinlikData: etkinlik,
                       )));
         }
-
-       
       }
     } else if (duyuru.duyuruTipi == 'sikayet') {
       Navigator.push(
@@ -225,6 +223,12 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
                 child: duyuru.duyuruTipi == 'azKaldi'
                     ? Image.network(
                         duyuru.etkinlikFoto.toString(),
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        },
                       )
                     : SizedBox(
                         height: 0,

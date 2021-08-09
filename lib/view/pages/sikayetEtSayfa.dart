@@ -251,7 +251,9 @@ class _SikayetEtSayfaState extends State<SikayetEtSayfa> {
           _yukleniyor = false;
         });
 
-        var snackBar = SnackBar(content: Text('Bir hata oluştu.'));
+        var snackBar = SnackBar(
+            content:
+                Text('Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.'));
         ScaffoldMessenger.of(context).showSnackBar(snackBar);
       }
     }

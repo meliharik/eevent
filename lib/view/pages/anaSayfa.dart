@@ -383,6 +383,13 @@ class _AnaSayfaState extends State<AnaSayfa>
                               child: Image.network(
                                 etkinlik.etkinlikResmiUrl.toString(),
                                 fit: BoxFit.fill,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                },
                               )),
                           Expanded(
                             flex: 4,

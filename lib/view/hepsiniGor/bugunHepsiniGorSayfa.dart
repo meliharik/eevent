@@ -164,6 +164,12 @@ class _BugunHepsiniGorSayfaState extends State<BugunHepsiniGorSayfa> {
                         child: Image.network(
                       etkinlik.etkinlikResmiUrl.toString(),
                       fit: BoxFit.fill,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
                     ))),
                 boslukWidth(context, 0.02),
                 Expanded(

@@ -287,7 +287,9 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
                     aktifKullaniciId: widget.aktifKullaniciId,
                   )));
     } catch (hata) {
-      var snackBar = SnackBar(content: Text('Bir hata oluştu'));
+      var snackBar = SnackBar(
+          content:
+              Text('Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       print("hata");
       print(hata.hashCode);
@@ -353,6 +355,12 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
       child: Image.network(
         widget.etkinlikData!.etkinlikResmiUrl.toString(),
         fit: BoxFit.fill,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ));
 
   Widget _baslikTxt() {

@@ -488,7 +488,7 @@ class _KayitSayfaState extends State<KayitSayfa> {
     } else if (hataKodu == 34618382) {
       hataMesaji = "Bu mail adresine kayıtlı bir kullanıcı bulunuyor.";
     } else {
-      hataMesaji = "Bir hata oluştu.";
+      hataMesaji = "Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.";
     }
 
     var snackBar = SnackBar(content: Text('$hataMesaji'));

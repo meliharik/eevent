@@ -235,7 +235,7 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
     } else if (hataKodu == 505284406) {
       hataMesaji = "Bu mail adresine kayıtlı bir kullanıcı bulunmuyor.";
     } else {
-      hataMesaji = "Bir hata oluştu.";
+      hataMesaji = "Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.";
     }
 
     var snackBar = SnackBar(content: Text('$hataMesaji'));

@@ -436,6 +436,7 @@ class _GirisSayfaState extends State<GirisSayfa> {
               Image.asset(
                 'assets/images/google.png',
                 height: MediaQuery.of(context).size.height * 0.04,
+                
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),

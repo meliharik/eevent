@@ -182,6 +182,12 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                         background: Image.network(
                           widget.etkinlikData!.etkinlikResmiUrl.toString(),
                           fit: BoxFit.contain,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          },
                         )),
                   ),
                 ];
@@ -380,7 +386,9 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
           setState(() {
             _yukleniyor = false;
           });
-          var snackBar = SnackBar(content: Text('Bir hata oluştu'));
+          var snackBar = SnackBar(
+              content: Text(
+                  'Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.'));
           ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
       } else {

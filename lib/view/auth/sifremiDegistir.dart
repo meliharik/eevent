@@ -343,7 +343,7 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
     } else if (hataKodu == 1) {
       hataMesaji = "Girilen şifreler aynı.";
     } else {
-      hataMesaji = "Bir hata oluştu.";
+      hataMesaji = "Bir hata oluştu. Birkaç dakika içinde tekrar deneyin.";
     }
 
     var snackBar = SnackBar(content: Text('$hataMesaji'));
