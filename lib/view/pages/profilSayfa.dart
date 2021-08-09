@@ -8,9 +8,11 @@ import 'package:event_app/view/pages/sikayetEtSayfa.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilSayfa extends StatefulWidget {
   final String? profilSahibiId;
@@ -384,8 +386,11 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
 
   Widget get _puanlaListTile => InkWell(
         onTap: () {
-          //TODO: Google Play puanlama sayfasına gidecek
-          print("Google Play puanlama sayfasına gidecek");
+          TapGestureRecognizer()
+            ..onTap = () {
+              launch(
+                  "https://play.google.com/store/apps/details?id=app.eevent.eevent");
+            };
         },
         child: ListTile(
           minVerticalPadding: 0,

@@ -172,7 +172,7 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
   void _paylas(BuildContext context) {
     //TODO: <APP_LINK> yerine uygulamanın store linki olacak
     final String? text =
-        "${widget.etkinlikData!.baslik} isimli etkinliğe bilet aldım. Sen de evde boş boş oturacağıma kendimi geliştireyim diyorsan hadi uygulamayı yükle.\n<APP_LINK>";
+        "${widget.etkinlikData!.baslik} isimli etkinliğe bilet aldım. Sen de evde boş boş oturacağıma kendimi geliştireyim diyorsan hadi uygulamayı yükle.\nhttps://play.google.com/store/apps/details?id=app.eevent.eevent";
 
     Share.share(text.toString(), subject: 'Uygulamayı indir!');
   }
