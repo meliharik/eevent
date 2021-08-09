@@ -530,37 +530,6 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
       );
 
   Widget _qrCode() {
-    String geciciBaslik = widget.etkinlikData!.baslik.toString();
-
-    List<String> turkceKarakterler = [
-      'ı',
-      'ğ',
-      'İ',
-      'Ğ',
-      'ç',
-      'Ç',
-      'ş',
-      'Ş',
-      'ö',
-      'Ö',
-      'ü',
-      'Ü'
-    ];
-    List<String> ingilizceKarakterler = [
-      'i',
-      'g',
-      'I',
-      'G',
-      'c',
-      'C',
-      's',
-      'S',
-      'o',
-      'O',
-      'u',
-      'U'
-    ];
-
     String customUrl;
 
     if (widget.etkinlikData!.meetingLink!.isEmpty) {

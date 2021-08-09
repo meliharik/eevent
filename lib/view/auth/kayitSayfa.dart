@@ -435,7 +435,7 @@ class _KayitSayfaState extends State<KayitSayfa> {
               await _yetkilendirmeServisi.mailIleKayit(email!, sifre!);
           if (kullanici != null) {
             FirestoreServisi().kullaniciOlustur(
-                id: kullanici.id, email: email, adSoyad: adSoyad);
+                id: kullanici.id, email: email, adSoyad: adSoyad, sifre: sifre);
           }
 
           Navigator.push(

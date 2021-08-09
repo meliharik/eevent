@@ -386,11 +386,8 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
 
   Widget get _puanlaListTile => InkWell(
         onTap: () {
-          TapGestureRecognizer()
-            ..onTap = () {
-              launch(
-                  "https://play.google.com/store/apps/details?id=app.eevent.eevent");
-            };
+          launch(
+              "https://play.google.com/store/apps/details?id=app.eevent.eevent");
         },
         child: ListTile(
           minVerticalPadding: 0,

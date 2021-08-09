@@ -1,4 +1,4 @@
-import 'package:event_app/model/connectivity_singleton.dart';
+
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/pages/anaSayfa.dart';
 import 'package:event_app/view/pages/aramaSayfa.dart';

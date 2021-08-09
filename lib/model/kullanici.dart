@@ -7,6 +7,7 @@ class Kullanici {
   final String? adSoyad;
   final String? fotoUrl;
   final String? email;
+  final String? sifre;
   final String? dogrulandiMi;
 
   Kullanici(
@@ -14,6 +15,7 @@ class Kullanici {
       this.adSoyad,
       this.fotoUrl,
       this.email,
+      this.sifre,
       this.dogrulandiMi});
 
   factory Kullanici.firebasedenUret(User kullanici) {
@@ -31,6 +33,7 @@ class Kullanici {
         id: doc.id,
         adSoyad: (docData as Map)['adSoyad'],
         email: docData['email'],
+        sifre: docData['sifre'],
         fotoUrl: docData['fotoUrl'],
         dogrulandiMi: docData['dogrulandiMi']);
   }

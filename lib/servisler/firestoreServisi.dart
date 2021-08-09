@@ -10,11 +10,17 @@ class FirestoreServisi {
   final DateTime zaman = DateTime.now();
 
   Future<void> kullaniciOlustur(
-      {id, email, adSoyad, fotoUrl = "", dogrulandiMi = "false"}) async {
+      {id,
+      email,
+      adSoyad,
+      fotoUrl = "",
+      dogrulandiMi = "false",
+      sifre = 'null'}) async {
     await _firestore.collection("kullanicilar").doc(id).set({
       "id": id,
       "adSoyad": adSoyad,
       "email": email,
+      "sifre": sifre,
       "fotoUrl": fotoUrl,
       "olusturulmaZamani": zaman,
       "dogrulandiMi": dogrulandiMi
@@ -148,7 +154,6 @@ class FirestoreServisi {
           DateTime(thisMonday.year, thisMonday.month, thisMonday.day, 00, 00);
       thisSunday =
           DateTime(thisSunday.year, thisSunday.month, thisSunday.day, 23, 59);
-          
 
       DateTime etkinlikZamani = DateFormat('dd/MM/yyyy hh:mm')
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
