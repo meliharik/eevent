@@ -5,6 +5,7 @@ import 'package:event_app/view/pages/biletDetaySayfa.dart';
 import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:lottie/lottie.dart';
 
 class BiletlerimSayfa extends StatefulWidget {
@@ -99,7 +100,13 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             .gecmisBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: LoadingBouncingGrid.square(
+                duration: Duration(milliseconds: 750),
+                size: MediaQuery.of(context).size.height * 0.05,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            );
           }
           if (snapshot.data!.length == 0) {
             return Center(
@@ -136,7 +143,13 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             .yaklasanBiletleriGetir(aktifKullaniciId: widget.profilSahibiId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(
+              child: LoadingBouncingGrid.square(
+                duration: Duration(milliseconds: 750),
+                size: MediaQuery.of(context).size.height * 0.05,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            );
           }
           if (snapshot.data!.length == 0) {
             return Center(
@@ -173,7 +186,13 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
             aktifKullaniciId: widget.profilSahibiId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),);
           }
           if (snapshot.data!.length == 0) {
             return Center(
@@ -295,7 +314,18 @@ class _BiletlerimSayfaState extends State<BiletlerimSayfa>
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
-                          child: CircularProgressIndicator(),
+                          child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text('Resim Yüklenemedi'),
                         );
                       },
                     ))),

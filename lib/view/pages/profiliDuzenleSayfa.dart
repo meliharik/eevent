@@ -6,6 +6,7 @@ import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class ProfiliDuzenleSayfa extends StatefulWidget {
   final Kullanici profilSahibiId;
@@ -90,7 +91,11 @@ class _ProfiliDuzenleSayfaState extends State<ProfiliDuzenleSayfa> {
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
       return Center(
-        child: CircularProgressIndicator(),
+        child: LoadingBouncingGrid.square(
+          duration: Duration(milliseconds: 750),
+          size: MediaQuery.of(context).size.height * 0.05,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     } else {
       return Center();

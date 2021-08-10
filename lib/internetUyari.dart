@@ -42,12 +42,13 @@ class _InternetUyariSayfaState extends State<InternetUyariSayfa> {
             ],
           ),
         ));
-    
   }
 
   Widget get _lottieAnimation => Center(
         child: Lottie.asset('assets/lottie/no_internet.json',
-            repeat: true, height: MediaQuery.of(context).size.height * 0.3),
+            frameRate: FrameRate(60),
+            repeat: true,
+            height: MediaQuery.of(context).size.height * 0.3),
       );
 
   Widget get _baslik => Row(

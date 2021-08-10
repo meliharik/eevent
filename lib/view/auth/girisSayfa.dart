@@ -8,6 +8,7 @@ import 'package:event_app/view/auth/kayitSayfa.dart';
 import 'package:event_app/view/auth/sifremiUnuttumSayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 
 class GirisSayfa extends StatefulWidget {
@@ -53,7 +54,11 @@ class _GirisSayfaState extends State<GirisSayfa> {
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
       return Center(
-        child: CircularProgressIndicator(),
+        child: LoadingBouncingGrid.square(
+          duration: Duration(milliseconds: 750),
+          size: MediaQuery.of(context).size.height * 0.05,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     } else {
       return Center();
@@ -436,7 +441,6 @@ class _GirisSayfaState extends State<GirisSayfa> {
               Image.asset(
                 'assets/images/google.png',
                 height: MediaQuery.of(context).size.height * 0.04,
-                
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0),

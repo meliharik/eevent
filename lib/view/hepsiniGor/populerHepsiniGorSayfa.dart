@@ -5,6 +5,7 @@ import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class PopulerHepsiniGorSayfa extends StatefulWidget {
   final String? aktifKullaniciId;
@@ -66,7 +67,13 @@ class _PopulerHepsiniGorSayfaState extends State<PopulerHepsiniGorSayfa> {
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
-                child: CircularProgressIndicator(),
+                child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
               );
             }
             if (snapshot.data!.length == 0) {
@@ -166,7 +173,18 @@ class _PopulerHepsiniGorSayfaState extends State<PopulerHepsiniGorSayfa> {
                       loadingBuilder: (context, child, loadingProgress) {
                         if (loadingProgress == null) return child;
                         return Center(
-                          child: CircularProgressIndicator(),
+                          child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Text('Resim Yüklenemedi'),
                         );
                       },
                     ))),

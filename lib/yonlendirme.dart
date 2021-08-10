@@ -5,6 +5,7 @@ import 'package:event_app/servisler/yetkilendirmeServisi.dart';
 import 'package:event_app/view/auth/girisSayfa.dart';
 import 'package:event_app/view/viewModel/tabbar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 
 class Yonlendirme extends StatefulWidget {
@@ -32,7 +33,14 @@ class _YonlendirmeState extends State<Yonlendirme> {
           return InternetUyariSayfa();
         } else {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Scaffold(body: Center(child: CircularProgressIndicator()));
+            return Scaffold(
+                body: Center(
+              child: LoadingBouncingGrid.square(
+                duration: Duration(milliseconds: 750),
+                size: MediaQuery.of(context).size.height * 0.05,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
+            ));
           }
           if (snapshot.hasData) {
             Kullanici? aktifKullanici = snapshot.data as Kullanici?;

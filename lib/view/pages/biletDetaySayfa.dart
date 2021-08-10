@@ -8,6 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -188,7 +189,11 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
-                    child: CircularProgressIndicator(),
+                    child: LoadingBouncingGrid.square(
+                      duration: Duration(milliseconds: 750),
+                      size: MediaQuery.of(context).size.height * 0.05,
+                      backgroundColor: Theme.of(context).primaryColor,
+                    ),
                   );
                 }
                 return SingleChildScrollView(
@@ -358,7 +363,16 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return Center(
-            child: CircularProgressIndicator(),
+            child: LoadingBouncingGrid.square(
+              duration: Duration(milliseconds: 750),
+              size: MediaQuery.of(context).size.height * 0.05,
+              backgroundColor: Theme.of(context).primaryColor,
+            ),
+          );
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text('Resim Yüklenemedi'),
           );
         },
       ));
@@ -559,7 +573,11 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
             return Text('QR code bulunamadı :(');
           case ConnectionState.active:
           case ConnectionState.waiting:
-            return CircularProgressIndicator();
+            return LoadingBouncingGrid.square(
+              duration: Duration(milliseconds: 750),
+              size: MediaQuery.of(context).size.height * 0.05,
+              backgroundColor: Theme.of(context).primaryColor,
+            );
           case ConnectionState.done:
             if (snapshot.hasError) return Text('Hata: ${snapshot.error}');
             return Container(

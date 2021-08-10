@@ -3,6 +3,7 @@ import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:lottie/lottie.dart';
 
 class SikayetDetaySayfa extends StatelessWidget {
@@ -96,7 +97,13 @@ class SikayetDetaySayfa extends StatelessWidget {
             aktifKullaniciId: aktfifKullaniciId, sikayetId: sikayetId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),);
           }
           Sikayet sikayet = snapshot.data as Sikayet;
           return SafeArea(
@@ -143,7 +150,13 @@ class SikayetDetaySayfa extends StatelessWidget {
             aktifKullaniciId: aktfifKullaniciId, sikayetId: sikayetId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
+            return Center(child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),);
           }
           Sikayet sikayet = snapshot.data as Sikayet;
           return SafeArea(

@@ -53,6 +53,7 @@ dependencies:
   device_id:
   rxdart:
   timezone:
+  loading_animations:
 
 dev_dependencies:
   flutter_test:

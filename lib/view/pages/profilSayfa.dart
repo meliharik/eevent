@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -57,7 +58,11 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
-              child: CircularProgressIndicator(),
+              child: LoadingBouncingGrid.square(
+                duration: Duration(milliseconds: 750),
+                size: MediaQuery.of(context).size.height * 0.05,
+                backgroundColor: Theme.of(context).primaryColor,
+              ),
             );
           }
           _profilSahibi = snapshot.data as Kullanici;
@@ -164,7 +169,16 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
               return Center(
-                child: CircularProgressIndicator(),
+                child: LoadingBouncingGrid.square(
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              );
+            },
+            errorBuilder: (context, error, stackTrace) {
+              return Center(
+                child: Text('Resim Yüklenemedi'),
               );
             },
           ),
@@ -483,7 +497,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
               fontWeight: FontWeight.w400),
         ),
         Text(
-          '\u00a9 2021 eevent LLC',
+          '\u00a9 2021 eevent',
           style: TextStyle(
               color: Color(0xff252745),
               fontFamily: 'Manrope',

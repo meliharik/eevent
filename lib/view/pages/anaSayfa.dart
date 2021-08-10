@@ -15,6 +15,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animations/loading_animations.dart';
 
 class AnaSayfa extends StatefulWidget {
   final String? aktifKullaniciId;
@@ -174,7 +175,13 @@ class _AnaSayfaState extends State<AnaSayfa>
                         .kullaniciGetir(widget.aktifKullaniciId),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                          child: LoadingBouncingGrid.square(
+                            duration: Duration(milliseconds: 750),
+                            size: MediaQuery.of(context).size.height * 0.05,
+                            backgroundColor: Theme.of(context).primaryColor,
+                          ),
+                        );
                       }
                       return _selamText(snapshot.data as Kullanici);
                     },
@@ -240,7 +247,13 @@ class _AnaSayfaState extends State<AnaSayfa>
           future: FirestoreServisi().populerEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: LoadingBouncingGrid.square(
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              );
             }
             if (snapshot.data!.length == 0) {
               return Center(child: Text("Popüler olan etkinlik hiç yok :("));
@@ -266,7 +279,13 @@ class _AnaSayfaState extends State<AnaSayfa>
           future: FirestoreServisi().buHaftaEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: LoadingBouncingGrid.square(
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              );
             }
             if (snapshot.data!.length == 0) {
               return Center(child: Text("Bu hafta hiç etkinlik yok :("));
@@ -292,7 +311,13 @@ class _AnaSayfaState extends State<AnaSayfa>
           future: FirestoreServisi().bugunEtkinlikleriGetir(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: CircularProgressIndicator());
+              return Center(
+                child: LoadingBouncingGrid.square(
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              );
             }
             if (snapshot.data!.length == 0) {
               return Center(child: Text("Bugün hiç etkinlik yok :("));
@@ -387,7 +412,18 @@ class _AnaSayfaState extends State<AnaSayfa>
                                     (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
                                   return Center(
-                                    child: CircularProgressIndicator(),
+                                    child: LoadingBouncingGrid.square(
+                                      duration: Duration(milliseconds: 750),
+                                      size: MediaQuery.of(context).size.height *
+                                          0.05,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
+                                    ),
+                                  );
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Center(
+                                    child: Text('Resim Yüklenemedi'),
                                   );
                                 },
                               )),

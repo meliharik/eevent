@@ -3,6 +3,7 @@ import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:lottie/lottie.dart';
 
 class SifremiDegistirSayfa extends StatefulWidget {
@@ -71,7 +72,11 @@ class _SifremiDegistirSayfaState extends State<SifremiDegistirSayfa> {
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
       return Center(
-        child: CircularProgressIndicator(),
+        child: LoadingBouncingGrid.square(
+          duration: Duration(milliseconds: 750),
+          size: MediaQuery.of(context).size.height * 0.05,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     } else {
       return Center();

@@ -6,6 +6,7 @@ import 'package:event_app/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animations/loading_animations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share/share.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -185,7 +186,16 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
                           loadingBuilder: (context, child, loadingProgress) {
                             if (loadingProgress == null) return child;
                             return Center(
-                              child: CircularProgressIndicator(),
+                              child: LoadingBouncingGrid.square(
+                                duration: Duration(milliseconds: 750),
+                                size: MediaQuery.of(context).size.height * 0.05,
+                                backgroundColor: Theme.of(context).primaryColor,
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Text('Resim Yüklenemedi'),
                             );
                           },
                         )),
@@ -212,7 +222,11 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
   Widget _yuklemeAnimasyonu() {
     if (_yukleniyor) {
       return Center(
-        child: CircularProgressIndicator(),
+        child: LoadingBouncingGrid.square(
+          duration: Duration(milliseconds: 750),
+          size: MediaQuery.of(context).size.height * 0.05,
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       );
     } else {
       return Center();
