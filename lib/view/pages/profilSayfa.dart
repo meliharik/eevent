@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:event_app/model/kullanici.dart';
 import 'package:event_app/servisler/firestoreServisi.dart';
 import 'package:event_app/servisler/notificationServisi.dart';
@@ -414,8 +416,11 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
 
   Widget get _puanlaListTile => InkWell(
         onTap: () {
-          launch(
-              "https://play.google.com/store/apps/details?id=app.eevent.eevent");
+          if (Platform.isIOS) {
+          } else {
+            launch(
+                "https://play.google.com/store/apps/details?id=app.eevent.eevent");
+          }
         },
         child: ListTile(
           minVerticalPadding: 0,
