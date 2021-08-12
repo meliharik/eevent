@@ -46,7 +46,8 @@ class NotificationService {
           android: AndroidNotificationDetails(
               'main_channel', 'Main Channel', "Main Channel notification",
               importance: Importance.max,
-              priority: Priority.max,
+              priority: Priority.high,
+              styleInformation: BigTextStyleInformation(''),
               icon: "@drawable/logo_white"),
           iOS: IOSNotificationDetails(
               sound: "default.wav",

@@ -255,7 +255,7 @@ class _SifremiUnuttumSayfaState extends State<SifremiUnuttumSayfa> {
   Widget get _bottomSheetAciklama => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0),
         child: Text(
-          'Şifreni sıfırlaman için mail adresine bir link gönderdik.',
+          'Şifreni sıfırlaman için mail adresine bir link gönderdik. Eğer maili göremezsen, spam kutusuna bakmayı unutma.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontFamily: 'Manrope',

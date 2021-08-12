@@ -162,37 +162,33 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
     return Row(
       children: [
         boslukWidth(context, 0.04),
-        ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(50)),
-          child: Image.network(
-            profilData.fotoUrl.toString(),
-            height: MediaQuery.of(context).size.height * 0.1,
-            fit: BoxFit.fill,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return Center(
-                child: LoadingBouncingGrid.square(
-                  duration: Duration(milliseconds: 750),
-                  size: MediaQuery.of(context).size.height * 0.05,
-                  backgroundColor: Theme.of(context).primaryColor,
-                ),
-              );
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return Center(
-                child: Text('Resim Yüklenemedi'),
-              );
-            },
-          ),
-        ),
-        // CircleAvatar(
-        //   backgroundColor: Theme.of(context).primaryColor,
-        //   backgroundImage: profilData.fotoUrl!.isNotEmpty
-        //       ? NetworkImage(profilData.fotoUrl.toString())
-        //       : AssetImage("assets/images/default_profile.png")
-        //           as ImageProvider,
-        //   radius: MediaQuery.of(context).size.height * 0.06,
+        // ClipRRect(
+        //   borderRadius: BorderRadius.all(Radius.circular(50)),
+        //   child: Image.network(
+        //     profilData.fotoUrl.toString(),
+        //     height: MediaQuery.of(context).size.height * 0.1,
+        //     fit: BoxFit.fill,
+        //     loadingBuilder: (context, child, loadingProgress) {
+        //       if (loadingProgress == null) return child;
+        //       return Center(
+        //         child: LoadingBouncingGrid.square(
+        //           duration: Duration(milliseconds: 750),
+        //           size: MediaQuery.of(context).size.height * 0.05,
+        //           backgroundColor: Theme.of(context).primaryColor,
+        //         ),
+        //       );
+        //     },
+
+        //   ),
         // ),
+        CircleAvatar(
+          backgroundColor: Theme.of(context).primaryColor,
+          backgroundImage: profilData.fotoUrl!.isNotEmpty
+              ? NetworkImage(profilData.fotoUrl.toString())
+              : AssetImage("assets/images/default_profile.png")
+                  as ImageProvider,
+          radius: MediaQuery.of(context).size.height * 0.06,
+        ),
         boslukWidth(context, 0.04),
         Flexible(
           child: Text(
