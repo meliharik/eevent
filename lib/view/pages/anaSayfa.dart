@@ -7,13 +7,11 @@ import 'package:eevent/servisler/firestoreServisi.dart';
 import 'package:eevent/view/hepsiniGor/buHaftaHepsiniGorSayfa.dart';
 import 'package:eevent/view/hepsiniGor/bugunHepsiniGorSayfa.dart';
 import 'package:eevent/view/hepsiniGor/populerHepsiniGorSayfa.dart';
-import 'package:eevent/view/pages/biletDetaySayfa.dart';
 import 'package:eevent/view/pages/duyurularSayfa.dart';
 import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:eevent/view/pages/etkinlikDetaySayfa.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';
 

@@ -9,9 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:lottie/lottie.dart';
 import 'package:share/share.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart';
 
 class EtkinlikDetaySayfa extends StatefulWidget {
   final String? aktifKullaniciId;
@@ -39,8 +37,8 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             widget.etkinlikData!.saat.toString());
 
     if (etkinlikZamani.hour == 00) {
-      etkinlikZamani = DateTime(
-          etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+      etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+          etkinlikZamani.day, 12, etkinlikZamani.minute);
     }
 
     if (etkinlikZamani.isBefore(now)) {
@@ -318,12 +316,14 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
     var ayTemp = parts[1];
     var yilTemp = parts[2];
 
+    // ignore: unrelated_type_equality_checks
     if (ayTemp[0] == 0) {
       ayTemp = ayTemp[1];
     }
 
     int gun = int.parse(gunTemp);
     int ay = int.parse(ayTemp);
+    // ignore: unused_local_variable
     int yil = int.parse(yilTemp);
 
     int toplamSaniyeEtkinlik = ((30 * ay) + gun) * 24 * 3600;

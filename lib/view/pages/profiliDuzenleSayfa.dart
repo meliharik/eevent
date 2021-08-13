@@ -173,7 +173,7 @@ class _ProfiliDuzenleSayfaState extends State<ProfiliDuzenleSayfa> {
   }
 
   _galeridenSec() async {
-    var image = await ImagePicker().getImage(
+    var image = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         maxWidth: 800,
         maxHeight: 600,

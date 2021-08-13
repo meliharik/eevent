@@ -14,15 +14,6 @@ class TabBarMain extends StatefulWidget {
 
 class _TabBarMainState extends State<TabBarMain> {
   int _currentIndex = 0;
-  final _controller = PageController();
-
-  void _onChange(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-    _controller.animateToPage(_currentIndex,
-        duration: Duration(milliseconds: 400), curve: Curves.decelerate);
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -73,8 +73,8 @@ class FirestoreServisi {
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
       if (etkinlikZamani.hour == 00) {
-        etkinlikZamani = DateTime(
-            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+        etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+            etkinlikZamani.day, 12, etkinlikZamani.minute);
       }
 
       if (etkinlikZamani.isAfter(now)) {
@@ -97,8 +97,8 @@ class FirestoreServisi {
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
       if (etkinlikZamani.hour == 00) {
-        etkinlikZamani = DateTime(
-            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+        etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+            etkinlikZamani.day, 12, etkinlikZamani.minute);
       }
 
       if (etkinlikZamani.isAfter(now) && etkinlik.kategori == kategori) {
@@ -123,8 +123,8 @@ class FirestoreServisi {
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
       if (etkinlikZamani.hour == 00) {
-        etkinlikZamani = DateTime(
-            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+        etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+            etkinlikZamani.day, 12, etkinlikZamani.minute);
       }
 
       if (etkinlikZamani.isAfter(now)) {
@@ -159,8 +159,8 @@ class FirestoreServisi {
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
       if (etkinlikZamani.hour == 00) {
-        etkinlikZamani = DateTime(
-            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+        etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+            etkinlikZamani.day, 12, etkinlikZamani.minute);
       }
 
       // print(etkinlik.baslik);
@@ -196,8 +196,8 @@ class FirestoreServisi {
           .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
 
       if (etkinlikZamani.hour == 00) {
-        etkinlikZamani = DateTime(
-            etkinlikZamani.year, etkinlikZamani.month, etkinlikZamani.day, 12);
+        etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
+            etkinlikZamani.day, 12, etkinlikZamani.minute);
       }
 
       if (formattedDate == etkinlik.tarih && etkinlikZamani.isAfter(now)) {
@@ -231,7 +231,7 @@ class FirestoreServisi {
 
         if (etkinlikZamani.hour == 00) {
           etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
-              etkinlikZamani.day, 12);
+              etkinlikZamani.day, 12, etkinlikZamani.minute);
         }
 
         if ((etkinlik.id == bilet.id)) {
@@ -268,7 +268,7 @@ class FirestoreServisi {
 
         if (etkinlikZamani.hour == 00) {
           etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
-              etkinlikZamani.day, 12);
+              etkinlikZamani.day, 12, etkinlikZamani.minute);
         }
 
         if ((etkinlik.id == bilet.id) && etkinlikZamani.isBefore(now)) {
@@ -499,7 +499,7 @@ class FirestoreServisi {
 
         if (etkinlikZamani.hour == 00) {
           etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
-              etkinlikZamani.day, 12);
+              etkinlikZamani.day, 12, etkinlikZamani.minute);
         }
 
         var yarimSaatSonrasi = now.add(Duration(minutes: 30));

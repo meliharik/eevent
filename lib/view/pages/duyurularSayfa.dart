@@ -75,12 +75,10 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
             if (!snapshot.hasData) {
               return Center(
                 child: LoadingBouncingGrid.square(
-                                      duration: Duration(milliseconds: 750),
-                                      size: MediaQuery.of(context).size.height *
-                                          0.05,
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                    ),
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
               );
             }
             if (snapshot.data!.length == 0) {
@@ -111,7 +109,7 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
             .parse(etkinlik.tarih.toString() + ' ' + etkinlik.saat.toString());
         if (etkinlikZamani.hour == 00) {
           etkinlikZamani = DateTime(etkinlikZamani.year, etkinlikZamani.month,
-              etkinlikZamani.day, 12);
+              etkinlikZamani.day, 12, etkinlikZamani.minute);
         }
         if (etkinlikZamani.isAfter(now)) {
           Navigator.push(
@@ -234,12 +232,10 @@ class _DuyurularSayfaState extends State<DuyurularSayfa> {
                           if (loadingProgress == null) return child;
                           return Center(
                             child: LoadingBouncingGrid.square(
-                                      duration: Duration(milliseconds: 750),
-                                      size: MediaQuery.of(context).size.height *
-                                          0.05,
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                    ),
+                              duration: Duration(milliseconds: 750),
+                              size: MediaQuery.of(context).size.height * 0.05,
+                              backgroundColor: Theme.of(context).primaryColor,
+                            ),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {

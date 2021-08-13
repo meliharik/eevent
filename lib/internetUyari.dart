@@ -1,7 +1,6 @@
 import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:eevent/yonlendirme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 
 class InternetUyariSayfa extends StatefulWidget {

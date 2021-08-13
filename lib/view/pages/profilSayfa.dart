@@ -10,7 +10,6 @@ import 'package:eevent/view/pages/sikayetEtSayfa.dart';
 import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:eevent/view/auth/girisSayfa.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';
@@ -356,29 +355,30 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
     );
   }
 
-  Widget get _yardimListTile => ListTile(
-        onTap: () {
-          //TODO: yardım sayfasına gidecek
-          print("Yardım sayfasına gidecek");
-        },
-        minVerticalPadding: 0,
-        horizontalTitleGap: 0,
-        leading: Icon(
-          FontAwesomeIcons.question,
-          color: Theme.of(context).primaryColor,
-        ),
-        title: Text(
-          'Yardım',
-          style: TextStyle(
-              color: Color(0xff252745),
-              fontFamily: 'Manrope',
-              fontWeight: FontWeight.w600),
-        ),
-        trailing: Icon(
-          FontAwesomeIcons.angleRight,
-          color: Theme.of(context).primaryColor,
-        ),
-      );
+  // Widget get _yardimListTile => ListTile(
+  //       onTap: () {
+  // ignore: todo
+  //         //TODO: yardım sayfasına gidecek
+  //         print("Yardım sayfasına gidecek");
+  //       },
+  //       minVerticalPadding: 0,
+  //       horizontalTitleGap: 0,
+  //       leading: Icon(
+  //         FontAwesomeIcons.question,
+  //         color: Theme.of(context).primaryColor,
+  //       ),
+  //       title: Text(
+  //         'Yardım',
+  //         style: TextStyle(
+  //             color: Color(0xff252745),
+  //             fontFamily: 'Manrope',
+  //             fontWeight: FontWeight.w600),
+  //       ),
+  //       trailing: Icon(
+  //         FontAwesomeIcons.angleRight,
+  //         color: Theme.of(context).primaryColor,
+  //       ),
+  //     );
 
   Widget get _sikayetListTile => InkWell(
         onTap: () {

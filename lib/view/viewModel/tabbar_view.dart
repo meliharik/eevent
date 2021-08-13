@@ -1,5 +1,3 @@
-
-import 'package:eevent/servisler/firestoreServisi.dart';
 import 'package:eevent/view/pages/anaSayfa.dart';
 import 'package:eevent/view/pages/aramaSayfa.dart';
 import 'package:eevent/view/pages/biletlerimSayfa.dart';

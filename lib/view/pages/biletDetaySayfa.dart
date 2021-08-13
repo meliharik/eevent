@@ -563,7 +563,7 @@ class _BiletDetaySayfaState extends State<BiletDetaySayfa> {
       customUrl = _customUrl;
     }
     String url =
-        'http://api.qrserver.com/v1/create-qr-code/?data=${customUrl}&size=100x100';
+        'http://api.qrserver.com/v1/create-qr-code/?data=$customUrl&size=100x100';
     return Center(
         child: FutureBuilder(
       future: http.get(Uri.parse(url)),
