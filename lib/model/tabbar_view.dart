@@ -1,7 +1,7 @@
-import 'package:event_app/view/pages/anaSayfa.dart';
-import 'package:event_app/view/pages/aramaSayfa.dart';
-import 'package:event_app/view/pages/biletlerimSayfa.dart';
-import 'package:event_app/view/pages/profilSayfa.dart';
+import 'package:eevent/view/pages/anaSayfa.dart';
+import 'package:eevent/view/pages/aramaSayfa.dart';
+import 'package:eevent/view/pages/biletlerimSayfa.dart';
+import 'package:eevent/view/pages/profilSayfa.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

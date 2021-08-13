@@ -1,5 +1,5 @@
-import 'package:event_app/model/kullanici.dart';
-import 'package:event_app/view/viewModel/widthAndHeight.dart';
+import 'package:eevent/model/kullanici.dart';
+import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

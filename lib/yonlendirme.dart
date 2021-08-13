@@ -1,9 +1,9 @@
 import 'package:connectivity/connectivity.dart';
-import 'package:event_app/internetUyari.dart';
-import 'package:event_app/model/kullanici.dart';
-import 'package:event_app/servisler/yetkilendirmeServisi.dart';
-import 'package:event_app/view/auth/girisSayfa.dart';
-import 'package:event_app/view/viewModel/tabbar_view.dart';
+import 'package:eevent/internetUyari.dart';
+import 'package:eevent/model/kullanici.dart';
+import 'package:eevent/servisler/yetkilendirmeServisi.dart';
+import 'package:eevent/view/auth/girisSayfa.dart';
+import 'package:eevent/view/viewModel/tabbar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animations/loading_animations.dart';
 import 'package:provider/provider.dart';

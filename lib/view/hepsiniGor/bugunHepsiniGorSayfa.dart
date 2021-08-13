@@ -1,7 +1,7 @@
-import 'package:event_app/model/etkinlik.dart';
-import 'package:event_app/servisler/firestoreServisi.dart';
-import 'package:event_app/view/pages/etkinlikDetaySayfa.dart';
-import 'package:event_app/view/viewModel/widthAndHeight.dart';
+import 'package:eevent/model/etkinlik.dart';
+import 'package:eevent/servisler/firestoreServisi.dart';
+import 'package:eevent/view/pages/etkinlikDetaySayfa.dart';
+import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';

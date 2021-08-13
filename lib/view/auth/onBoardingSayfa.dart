@@ -1,6 +1,6 @@
-import 'package:event_app/view/viewModel/onBoardingModel.dart';
-import 'package:event_app/view/viewModel/widthAndHeight.dart';
-import 'package:event_app/view/auth/girisSayfa.dart';
+import 'package:eevent/view/viewModel/onBoardingModel.dart';
+import 'package:eevent/view/viewModel/widthAndHeight.dart';
+import 'package:eevent/view/auth/girisSayfa.dart';
 import 'package:flutter/material.dart';
 
 class OnBoardingSayfa extends StatefulWidget {

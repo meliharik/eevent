@@ -1,6 +1,6 @@
-import 'package:event_app/model/sikayet.dart';
-import 'package:event_app/servisler/firestoreServisi.dart';
-import 'package:event_app/view/viewModel/widthAndHeight.dart';
+import 'package:eevent/model/sikayet.dart';
+import 'package:eevent/servisler/firestoreServisi.dart';
+import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animations/loading_animations.dart';

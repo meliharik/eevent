@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:event_app/model/duyuru.dart';
-import 'package:event_app/model/etkinlik.dart';
-import 'package:event_app/model/kullanici.dart';
-import 'package:event_app/model/sikayet.dart';
+import 'package:eevent/model/duyuru.dart';
+import 'package:eevent/model/etkinlik.dart';
+import 'package:eevent/model/kullanici.dart';
+import 'package:eevent/model/sikayet.dart';
 import 'package:intl/intl.dart';
 
 class FirestoreServisi {

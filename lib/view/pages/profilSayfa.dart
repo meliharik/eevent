@@ -1,14 +1,14 @@
 import 'dart:io';
 
-import 'package:event_app/model/kullanici.dart';
-import 'package:event_app/servisler/firestoreServisi.dart';
-import 'package:event_app/servisler/notificationServisi.dart';
-import 'package:event_app/servisler/yetkilendirmeServisi.dart';
-import 'package:event_app/view/auth/sifremiDegistir.dart';
-import 'package:event_app/view/pages/profiliDuzenleSayfa.dart';
-import 'package:event_app/view/pages/sikayetEtSayfa.dart';
-import 'package:event_app/view/viewModel/widthAndHeight.dart';
-import 'package:event_app/view/auth/girisSayfa.dart';
+import 'package:eevent/model/kullanici.dart';
+import 'package:eevent/servisler/firestoreServisi.dart';
+import 'package:eevent/servisler/notificationServisi.dart';
+import 'package:eevent/servisler/yetkilendirmeServisi.dart';
+import 'package:eevent/view/auth/sifremiDegistir.dart';
+import 'package:eevent/view/pages/profiliDuzenleSayfa.dart';
+import 'package:eevent/view/pages/sikayetEtSayfa.dart';
+import 'package:eevent/view/viewModel/widthAndHeight.dart';
+import 'package:eevent/view/auth/girisSayfa.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
