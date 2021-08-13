@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
           return MediaQuery(
             data: MediaQuery.of(context).copyWith(
                 textScaleFactor:
-                    MediaQuery.of(context).textScaleFactor.clamp(0.8, 0.8)),
+                    MediaQuery.of(context).textScaleFactor.clamp(0.8, 0.9)),
             child: ResponsiveWrapper.builder(
                 BouncingScrollWrapper.builder(context, widget!),
                 maxWidth: 1200,
