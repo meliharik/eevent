@@ -487,10 +487,10 @@ class _AnaSayfaState extends State<AnaSayfa>
             ),
             Row(
               children: [
-                boslukWidth(context, 0.25),
+                boslukWidth(context, 0.29),
                 Column(
                   children: [
-                    boslukHeight(context, 0.12),
+                    boslukHeight(context, 0.09),
                     Card(
                         elevation: 3,
                         child: Row(
