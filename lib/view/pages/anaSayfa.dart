@@ -402,7 +402,7 @@ class _AnaSayfaState extends State<AnaSayfa>
                       child: Column(
                         children: [
                           Expanded(
-                              flex: 5,
+                              flex: 6,
                               child: Image.network(
                                 etkinlik.etkinlikResmiUrl.toString(),
                                 fit: BoxFit.fill,
@@ -426,7 +426,7 @@ class _AnaSayfaState extends State<AnaSayfa>
                                 },
                               )),
                           Expanded(
-                            flex: 5,
+                            flex: 4,
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8.0),
                               child: Container(
