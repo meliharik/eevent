@@ -593,8 +593,11 @@ class _EtkinlikDetaySayfaState extends State<EtkinlikDetaySayfa> {
             ),
             Text(
               widget.etkinlikData!.saat.toString(),
-              style:
-                  TextStyle(fontFamily: 'Manrope', fontWeight: FontWeight.w400),
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w400,
+                fontSize: 18,
+              ),
             ),
           ],
         ),

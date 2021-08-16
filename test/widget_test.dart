@@ -1,30 +1,67 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:eevent/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+  group('TextScaleFactorClamper', () {
+    double? effectiveTextScaleFactor;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setUp(() {
+      effectiveTextScaleFactor = 0;
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    Future<void> pumpWithTextScaleFactor(WidgetTester tester, double factor) {
+      return tester.pumpWidget(
+        MediaQuery(
+          data: MediaQueryData(textScaleFactor: factor),
+          child: TextScaleFactorClamper(
+            child: Builder(builder: (context) {
+              // Obtain the effective textScaleFactor in this context and assign
+              // the value to a variable, so that we can check if it's what we
+              // want.
+              effectiveTextScaleFactor = MediaQuery.of(context).textScaleFactor;
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+              // We don't care about what's rendered, so let's just return the
+              // most minimal widget we can.
+              return const SizedBox.shrink();
+            }),
+          ),
+        ),
+      );
+    }
+
+    testWidgets('constrains the text scale factor to always be between 1.0-1.5',
+        (tester) async {
+      await pumpWithTextScaleFactor(tester, 5);
+      expect(effectiveTextScaleFactor, 0.9);
+
+      await pumpWithTextScaleFactor(tester, 0.1);
+      expect(effectiveTextScaleFactor, 0.8);
+
+      await pumpWithTextScaleFactor(tester, -5.0);
+      expect(effectiveTextScaleFactor, 0.8);
+
+      await pumpWithTextScaleFactor(tester, 1.25);
+      expect(effectiveTextScaleFactor, 1.25);
+    });
   });
+}
+
+class TextScaleFactorClamper extends StatelessWidget {
+  const TextScaleFactorClamper({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+    final constrainedTextScaleFactor =
+        mediaQueryData.textScaleFactor.clamp(0.8, 0.9);
+
+    return MediaQuery(
+      data: mediaQueryData.copyWith(
+        textScaleFactor: constrainedTextScaleFactor,
+      ),
+      child: child,
+    );
+  }
 }
