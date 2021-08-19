@@ -17,11 +17,7 @@ class AramaSayfa extends StatefulWidget {
   _AramaSayfaState createState() => _AramaSayfaState();
 }
 
-class _AramaSayfaState extends State<AramaSayfa>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _AramaSayfaState extends State<AramaSayfa> {
   final aramaController = TextEditingController();
   Future<List<Etkinlik>>? _aramaSonucu;
   ValueNotifier<bool> notifier = ValueNotifier(false);
@@ -29,7 +25,6 @@ class _AramaSayfaState extends State<AramaSayfa>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
       body: _sayfaElemanlari,
     );
@@ -204,13 +199,13 @@ class _AramaSayfaState extends State<AramaSayfa>
           future: _aramaSonucu,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(child: LoadingBouncingGrid.square(
-                                      duration: Duration(milliseconds: 750),
-                                      size: MediaQuery.of(context).size.height *
-                                          0.05,
-                                      backgroundColor:
-                                          Theme.of(context).primaryColor,
-                                    ),);
+              return Center(
+                child: LoadingBouncingGrid.square(
+                  duration: Duration(milliseconds: 750),
+                  size: MediaQuery.of(context).size.height * 0.05,
+                  backgroundColor: Theme.of(context).primaryColor,
+                ),
+              );
             }
 
             if (snapshot.data!.length == 0) {
