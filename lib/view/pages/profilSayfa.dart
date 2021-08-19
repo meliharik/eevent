@@ -7,6 +7,7 @@ import 'package:eevent/servisler/yetkilendirmeServisi.dart';
 import 'package:eevent/view/auth/sifremiDegistir.dart';
 import 'package:eevent/view/pages/profiliDuzenleSayfa.dart';
 import 'package:eevent/view/pages/sikayetEtSayfa.dart';
+import 'package:eevent/view/sozlesmeler/gizlilik.dart';
 import 'package:eevent/view/viewModel/widthAndHeight.dart';
 import 'package:eevent/view/auth/girisSayfa.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -86,6 +87,8 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
                 _sikayetListTile,
                 _customDivider,
                 _puanlaListTile,
+                _customDivider,
+                _gizlilikListTile,
                 _customDivider,
                 _cikisYap(),
                 boslukHeight(context, 0.1),
@@ -410,6 +413,32 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
         ),
       );
 
+  Widget get _gizlilikListTile => InkWell(
+        onTap: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => GizlilikSayfa()));
+        },
+        child: ListTile(
+          minVerticalPadding: 0,
+          horizontalTitleGap: 0,
+          leading: Icon(
+            FontAwesomeIcons.shieldAlt,
+            color: Theme.of(context).primaryColor,
+          ),
+          title: Text(
+            'Gizlilik',
+            style: TextStyle(
+                color: Color(0xff252745),
+                fontFamily: 'Manrope',
+                fontWeight: FontWeight.w600),
+          ),
+          trailing: Icon(
+            FontAwesomeIcons.angleRight,
+            color: Theme.of(context).primaryColor,
+          ),
+        ),
+      );
+
   Widget get _puanlaListTile => InkWell(
         onTap: () {
           if (Platform.isIOS) {
@@ -491,7 +520,7 @@ class _ProfilSayfaState extends State<ProfilSayfa> {
               fontWeight: FontWeight.w600),
         ),
         Text(
-          'Versiyon 1.0.0',
+          'Versiyon 1.0.1',
           style: TextStyle(
               color: Color(0xff252745),
               fontFamily: 'Manrope',
